@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <title>Bolão Solidário HM Bazar e Conveniência</title>    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  </head>
+
+  <body>
+    <form name="palpite-bolao" netlify netlify-honeypot="bot-field" hidden>
+      <input type="text" name="bot-field" />
+      <input type="text" name="nome" />
+      <input type="tel" name="whatsapp" />
+      <input type="text" name="ponto_entrega" />
+      <input type="text" name="tipo_doacao" />
+      <input type="text" name="codigo_provisorio" />
+      <input type="text" name="voucher" />
+      <textarea name="palpites_jogos"></textarea>
+      <textarea name="observacoes"></textarea>
+    </form>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script
+      defer
+      src="%VITE_ANALYTICS_ENDPOINT%/umami"
+      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+  </body>
+
+</html>
