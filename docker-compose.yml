@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: bolao-hm-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: bolao_hm
@@ -21,13 +20,26 @@ services:
 
   adminer:
     image: adminer:4
-    container_name: bolao-hm-adminer
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8081:8080"
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://bolao:bolao_dev@db:5432/bolao_hm
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin_dev}
+    ports:
+      - "3000:3000"
 
 volumes:
   bolao_hm_pgdata:

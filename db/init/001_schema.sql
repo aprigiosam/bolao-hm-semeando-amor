@@ -81,26 +81,16 @@ FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 
 CREATE OR REPLACE FUNCTION calculate_prediction_score(pred_home INTEGER, pred_away INTEGER, real_home INTEGER, real_away INTEGER)
 RETURNS INTEGER AS $$
-DECLARE
-  points INTEGER := 0;
 BEGIN
   IF pred_home = real_home AND pred_away = real_away THEN
-    RETURN 5;
+    RETURN 10;
   END IF;
 
   IF sign(pred_home - pred_away) = sign(real_home - real_away) THEN
-    points := points + 3;
+    RETURN 5;
   END IF;
 
-  IF pred_home = real_home THEN
-    points := points + 1;
-  END IF;
-
-  IF pred_away = real_away THEN
-    points := points + 1;
-  END IF;
-
-  RETURN points;
+  RETURN 0;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
@@ -112,10 +102,13 @@ SELECT
   p.whatsapp,
   p.donation_confirmed,
   COALESCE(SUM(ps.points), 0)::INTEGER AS total_points,
+  COALESCE(SUM(CASE WHEN ps.exact_score THEN 1 ELSE 0 END), 0)::INTEGER AS exact_scores,
+  COALESCE(SUM(CASE WHEN ps.correct_result THEN 1 ELSE 0 END), 0)::INTEGER AS correct_results,
   COUNT(ps.prediction_id)::INTEGER AS scored_matches,
   COUNT(pr.id)::INTEGER AS predicted_matches
 FROM participants p
 LEFT JOIN predictions pr ON pr.participant_id = p.id
 LEFT JOIN prediction_scores ps ON ps.prediction_id = pr.id
-GROUP BY p.id, p.code, p.full_name, p.whatsapp, p.donation_confirmed
-ORDER BY total_points DESC, scored_matches DESC, p.created_at ASC;
+WHERE p.donation_confirmed = true
+GROUP BY p.id, p.code, p.full_name, p.whatsapp, p.donation_confirmed, p.created_at
+ORDER BY total_points DESC, exact_scores DESC, correct_results DESC, scored_matches DESC, p.created_at ASC;
