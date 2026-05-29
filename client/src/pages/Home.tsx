@@ -21,6 +21,7 @@ import {
   Users,
 } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { Link, useLocation } from "wouter";
 
 type Match = {
   id: number;
@@ -182,10 +183,6 @@ function predictionKey(matchId: number, side: "home" | "away") {
   return `${matchId}-${side}`;
 }
 
-function navigateTo(path: string) {
-  window.location.assign(path);
-}
-
 function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -221,6 +218,7 @@ function VisualFallback({ children, className = "" }: { children: ReactNode; cla
 type HomeView = "home" | "sobre" | "participar" | "palpites" | "ranking";
 
 export default function Home({ view = "home" }: { view?: HomeView }) {
+  const [, setLocation] = useLocation();
   const [matches, setMatches] = useState<Match[]>([]);
   const [ranking, setRanking] = useState<RankingRow[]>([]);
   const [participant, setParticipant] = useState<Participant | null>(() => {
@@ -396,7 +394,7 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
       setParticipant(payload.participant);
       setPredictions(nextPredictions);
       setMessage("Participação encontrada. Você pode continuar seus palpites.");
-      navigateTo("/palpites");
+      setLocation("/palpites");
     } catch {
       setMessage("Não encontrei essa combinação de código e WhatsApp.");
     } finally {
@@ -466,7 +464,7 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
     <div className="min-h-screen bg-[#fffaf0] text-stone-950">
       <header className="sticky top-0 z-40 border-b border-emerald-900/10 bg-white/90 backdrop-blur-xl">
         <div className="container flex items-center justify-between gap-4 py-3">
-          <a href="#top" className="flex min-w-0 items-center gap-3">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
             <SafeImage
               src={assets.hmLogo}
               alt="HM Bazar e Conveniência"
@@ -489,30 +487,30 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
             />
             <div className="min-w-0">
               <p className="truncate font-display text-sm text-emerald-950 sm:text-base">Bolão Solidário</p>
-              <p className="truncate text-xs font-black text-rose-700">HM + Semeando Amor</p>
+              <p className="truncate text-xs font-black text-rose-700">HM Bazar e Conveniência + Semeando Amor</p>
             </div>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-6 text-sm font-black text-emerald-950 lg:flex">
-            <button onClick={() => navigateTo("/sobre")} className="hover:text-rose-700">
+            <Link href="/sobre" className="hover:text-rose-700">
               Sobre
-            </button>
-            <button onClick={() => navigateTo("/participar")} className="hover:text-rose-700">
+            </Link>
+            <Link href="/participar" className="hover:text-rose-700">
               Participar
-            </button>
-            <button onClick={() => navigateTo("/palpites")} className="hover:text-rose-700">
+            </Link>
+            <Link href="/palpites" className="hover:text-rose-700">
               Palpites
-            </button>
-            <button onClick={() => navigateTo("/ranking")} className="hover:text-rose-700">
+            </Link>
+            <Link href="/ranking" className="hover:text-rose-700">
               Ranking
-            </button>
+            </Link>
             <a href="/admin" className="hover:text-rose-700">
               Admin
             </a>
           </nav>
 
           <Button
-            onClick={() => navigateTo("/participar")}
+            onClick={() => setLocation("/participar")}
             className="bg-rose-700 px-4 font-black text-white hover:bg-rose-800"
           >
             Participar
@@ -551,14 +549,14 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
 
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Button
-                  onClick={() => navigateTo("/participar")}
+                  onClick={() => setLocation("/participar")}
                   className="group h-14 bg-yellow-300 px-8 text-lg font-black text-emerald-950 shadow-[0_20px_50px_rgba(250,204,21,0.3)] hover:bg-yellow-200"
                 >
                   Quero participar agora
                   <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </Button>
                 <Button
-                  onClick={() => navigateTo("/ranking")}
+                  onClick={() => setLocation("/ranking")}
                   variant="outline"
                   className="h-14 border-white/40 bg-white/5 px-8 text-lg font-black text-white backdrop-blur-sm hover:bg-white hover:text-emerald-950"
                 >
@@ -1037,11 +1035,11 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
                       Confirmar doação no WhatsApp
                     </Button>
                     <Button
-                      onClick={() => navigateTo("/palpites")}
+                      onClick={() => setLocation("/palpites")}
                       variant="outline"
                       className="h-14 rounded-2xl border-2 border-blue-700 font-black text-blue-800 hover:bg-blue-50"
                     >
-                      Ir para os palpites
+                      Ir para os palpites Solidários
                     </Button>
                   </div>
                 </div>
@@ -1247,10 +1245,10 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
                       Depois de receber seu código, os campos de placar ficam liberados para você preencher.
                     </p>
                     <Button
-                      onClick={() => navigateTo("/participar")}
+                      onClick={() => setLocation("/participar")}
                       className="mt-7 h-14 w-full rounded-2xl bg-yellow-300 text-lg font-black text-emerald-950 hover:bg-yellow-200"
                     >
-                      Fazer minha participação
+                      Fazer minha participação Solidária
                     </Button>
                   </>
                 )}
@@ -1269,10 +1267,10 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
               </div>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row md:mt-0">
                 <Button
-                  onClick={() => navigateTo("/participar")}
+                  onClick={() => setLocation("/participar")}
                   className="h-12 rounded-2xl bg-blue-700 px-6 font-black text-white hover:bg-blue-800"
                 >
-                  Fazer participação
+                  Fazer participação Solidária
                 </Button>
                 <Button
                   asChild
@@ -1611,11 +1609,11 @@ export default function Home({ view = "home" }: { view?: HomeView }) {
           <div>
             <h4 className="font-display text-xl text-emerald-950">Links Rápidos</h4>
             <ul className="mt-6 space-y-4 font-bold text-stone-600">
-              <li><button onClick={() => navigateTo("/")}>Início</button></li>
-              <li><button onClick={() => navigateTo("/sobre")}>Sobre a campanha</button></li>
-              <li><button onClick={() => navigateTo("/participar")}>Participar</button></li>
-              <li><button onClick={() => navigateTo("/palpites")}>Palpites</button></li>
-              <li><button onClick={() => navigateTo("/ranking")}>Ranking</button></li>
+              <li><button onClick={() => setLocation("/")}>Início</button></li>
+              <li><button onClick={() => setLocation("/sobre")}>Sobre a campanha</button></li>
+              <li><button onClick={() => setLocation("/participar")}>Participar</button></li>
+              <li><button onClick={() => setLocation("/palpites")}>Palpites Solidários</button></li>
+              <li><button onClick={() => setLocation("/ranking")}>Ranking</button></li>
             </ul>
           </div>
 
