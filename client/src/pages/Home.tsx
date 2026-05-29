@@ -102,6 +102,7 @@ const assets = {
   stadiumMetlife: "/assets/stadium-metlife.jpg",
   stadiumSofi: "/assets/stadium-sofi.jpg",
   stadiumAtt: "/assets/stadium-att.jpg",
+  videoAssociacao: "/assets/video-associacao.mp4",
 };
 
 const stadiumJourney = [
@@ -137,13 +138,11 @@ const stadiumJourney = [
 
 const socialLinks = {
   hm: {
-    instagram: "https://instagram.com/hm_bazar",
-    facebook: "https://facebook.com/hmbazar",
+    instagram: "https://www.instagram.com/hm.bazar.conveniencia?igsh=MWlsdHlkeXh5MTl1ag%3D%3D&utm_source=qr",
     whatsapp: hmWhatsAppUrl,
   },
   associacao: {
     instagram: "https://instagram.com/semeandoamor",
-    facebook: "https://facebook.com/semeandoamor",
     whatsapp: "https://wa.me/5511999999999", // Placeholder for Association
   }
 };
@@ -627,10 +626,20 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative space-y-6">
               <div className="absolute -inset-4 rounded-[2rem] bg-rose-200/50 blur-2xl" />
-              <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl">
-                <SafeImage src={assets.community} alt="Atividades Associação" className="h-[500px] w-full object-cover" fallback={<VisualFallback className="h-[500px] w-full" children={null} />} />
+              <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl bg-black aspect-video">
+                <video 
+                  src={assets.videoAssociacao} 
+                  controls 
+                  className="h-full w-full object-cover"
+                  poster={assets.community}
+                >
+                  Seu navegador não suporta vídeos.
+                </video>
+              </div>
+              <div className="relative overflow-hidden rounded-[2rem] shadow-xl border-4 border-white">
+                <SafeImage src={assets.community} alt="Atividades Associação" className="h-[250px] w-full object-cover" fallback={<VisualFallback className="h-[250px] w-full" children={null} />} />
               </div>
             </div>
           </div>
@@ -778,43 +787,80 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="jornada-copa" className="bg-white py-20">
+        <section id="nossa-comunidade" className="bg-emerald-50 py-24">
           <div className="container">
-            <div className="mb-12">
+            <div className="flex flex-col items-center text-center mb-16">
+              <p className="font-black uppercase tracking-widest text-emerald-800">Impacto Real</p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-6xl">
+                Nossa <span className="text-emerald-600">Comunidade</span>
+              </h2>
+              <p className="mt-6 max-w-2xl text-lg font-medium text-stone-600">
+                O bolão é apenas o começo. Veja como a sua participação se transforma em sorrisos, aprendizado e cuidado no nosso bairro.
+              </p>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-3">
+              {[
+                { title: "Ações Sociais", text: "Distribuição de cestas e apoio direto às famílias.", icon: Heart },
+                { title: "Aulas & Educação", text: "Reforço escolar e oficinas para nossas crianças.", icon: Sparkles },
+                { title: "Voluntariado", text: "Gente do bairro cuidando de gente do bairro.", icon: Users },
+              ].map((item, i) => (
+                <div key={i} className="group relative overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-xl transition-all hover:bg-emerald-900 hover:text-white">
+                  <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 transition-colors group-hover:bg-white/10 group-hover:text-yellow-300">
+                    <item.icon className="h-8 w-8" />
+                  </div>
+                  <h3 className="font-display text-3xl">{item.title}</h3>
+                  <p className="mt-4 text-stone-600 group-hover:text-emerald-100">{item.text}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 grid gap-4 grid-cols-2 md:grid-cols-4">
+               {[1,2,3,4].map(i => (
+                 <div key={i} className="aspect-square overflow-hidden rounded-3xl shadow-lg">
+                    <SafeImage src={assets.community} alt={`Comunidade ${i}`} className="h-full w-full object-cover transition-transform hover:scale-110" fallback={<VisualFallback children={null} className="h-full" />} />
+                 </div>
+               ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="jornada-copa" className="bg-white py-24">
+          <div className="container">
+            <div className="mb-16">
               <p className="font-black uppercase tracking-widest text-blue-700">Exploração</p>
               <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-6xl">
                 A Jornada da <span className="text-yellow-500">Copa</span>
               </h2>
-              <p className="mt-4 max-w-2xl text-lg font-medium text-stone-600">
-                Acompanhe os palcos onde o Brasil vai buscar o hexa. Do México aos Estados Unidos, a emoção está garantida.
+              <p className="mt-6 max-w-2xl text-lg font-medium text-stone-600">
+                Acompanhe os palcos monumentais onde a história do futebol será escrita em 2026.
               </p>
             </div>
             
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {stadiumJourney.map((stadium) => (
-                <Card key={stadium.name} className="group overflow-hidden border-0 bg-white shadow-2xl transition-all hover:-translate-y-2">
-                  <div className="relative h-48 overflow-hidden">
-                    <SafeImage
-                      src={stadium.image}
-                      alt={stadium.name}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      fallback={
-                        <VisualFallback className="h-full w-full">
-                          <Trophy className="h-9 w-9 text-yellow-200" />
-                        </VisualFallback>
-                      }
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 to-transparent" />
-                    <div className="absolute bottom-3 left-4">
-                      <p className="font-display text-lg text-white">{stadium.name}</p>
-                      <p className="text-xs font-bold text-emerald-200">{stadium.city}, {stadium.country}</p>
+                <Card key={stadium.name} className="group relative h-[450px] overflow-hidden border-0 shadow-2xl transition-all hover:-translate-y-2">
+                  <SafeImage
+                    src={stadium.image}
+                    alt={stadium.name}
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    fallback={<VisualFallback className="h-full w-full" children={null} />}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent opacity-90 transition-opacity group-hover:opacity-100" />
+                  
+                  <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
+                    <div className="translate-y-8 transition-transform duration-500 group-hover:translate-y-0">
+                      <p className="text-xs font-black uppercase tracking-widest text-yellow-400">Palco da Copa</p>
+                      <h3 className="mt-2 font-display text-3xl leading-tight">{stadium.name}</h3>
+                      <p className="mt-1 text-sm font-bold text-emerald-200">{stadium.city}, {stadium.country}</p>
+                      
+                      <div className="mt-6 border-t border-white/20 pt-6 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                        <p className="text-xs font-black uppercase tracking-widest text-yellow-500">Você sabia?</p>
+                        <p className="mt-2 text-sm leading-relaxed text-emerald-50">
+                          {stadium.curiosity}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-5">
-                    <p className="text-xs font-black uppercase tracking-widest text-yellow-600">Curiosidade</p>
-                    <p className="mt-2 text-sm font-medium leading-relaxed text-stone-600">
-                      {stadium.curiosity}
-                    </p>
                   </div>
                 </Card>
               ))}
@@ -1228,7 +1274,6 @@ export default function Home() {
                 <div className="flex flex-wrap gap-4">
                   {[
                     { label: "Instagram", icon: "Instagram", href: socialLinks.hm.instagram, color: "bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600" },
-                    { label: "Facebook", icon: "Facebook", href: socialLinks.hm.facebook, color: "bg-blue-600" },
                     { label: "WhatsApp", icon: "MessageCircle", href: socialLinks.hm.whatsapp, color: "bg-emerald-600" },
                   ].map((link) => (
                     <a key={link.label} href={link.href} target="_blank" rel="noopener" className={`flex h-14 items-center gap-3 rounded-2xl ${link.color} px-6 font-black transition-transform hover:scale-105`}>
@@ -1247,7 +1292,6 @@ export default function Home() {
                 <div className="flex flex-wrap gap-4">
                   {[
                     { label: "Instagram", icon: "Instagram", href: socialLinks.associacao.instagram, color: "bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600" },
-                    { label: "Facebook", icon: "Facebook", href: socialLinks.associacao.facebook, color: "bg-blue-600" },
                     { label: "WhatsApp", icon: "MessageCircle", href: socialLinks.associacao.whatsapp, color: "bg-emerald-600" },
                   ].map((link) => (
                     <a key={link.label} href={link.href} target="_blank" rel="noopener" className={`flex h-14 items-center gap-3 rounded-2xl ${link.color} px-6 font-black transition-transform hover:scale-105`}>
