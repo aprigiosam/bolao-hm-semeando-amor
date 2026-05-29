@@ -143,7 +143,7 @@ const socialLinks = {
   },
   associacao: {
     instagram: "https://instagram.com/semeandoamor",
-    whatsapp: "https://wa.me/5511999999999", // Placeholder for Association
+    whatsapp: "https://wa.me/5511959305099",
   }
 };
 
@@ -497,10 +497,10 @@ export default function Home() {
               {/* Social Proof Counters */}
               <div className="grid grid-cols-2 gap-4 pt-4 sm:grid-cols-4">
                 {[
-                  { label: "Participantes", value: ranking.length || "50+", icon: Users },
-                  { label: "Doações", value: "120+", icon: HandHeart },
+                  { label: "Participantes", value: ranking.length || "Aberto", icon: Users },
+                  { label: "Doações", value: "Solidárias", icon: HandHeart },
                   { label: "Prêmios", value: "3", icon: Gift },
-                  { label: "Sorteios", value: "Mensais", icon: Sparkles },
+                  { label: "Sorteio", value: "Ativo", icon: Sparkles },
                 ].map((stat) => (
                   <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
                     <stat.icon className="mb-2 h-5 w-5 text-yellow-300" />
@@ -553,7 +553,7 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
                   <div className="overflow-hidden rounded-3xl shadow-xl">
-                    <SafeImage src={assets.hmStoreMain} alt="HM Bazar Loja" className="aspect-[4/5] object-cover" fallback={<VisualFallback className="aspect-[4/5]" children={null} />} />
+                    <SafeImage src={assets.hmStoreMain} alt="HM Bazar e Conveniência Loja" className="aspect-[4/5] object-cover" fallback={<VisualFallback className="aspect-[4/5]" children={null} />} />
                   </div>
                   <div className="overflow-hidden rounded-3xl shadow-xl">
                     <SafeImage src={assets.hmStoreShelves} alt="Produtos HM" className="aspect-square object-cover" fallback={<VisualFallback className="aspect-square" children={null} />} />
@@ -569,7 +569,7 @@ export default function Home() {
             <div className="order-1 lg:order-2">
               <p className="font-black uppercase tracking-widest text-emerald-800">Apoio Local</p>
               <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-6xl">
-                Conheça a <span className="text-blue-700">HM Bazar</span>
+                Conheça a <span className="text-blue-700">HM Bazar e Conveniência</span>
               </h2>
               <p className="mt-8 text-xl font-medium leading-relaxed text-stone-600">
                 A HM Bazar e Conveniência apoia esta iniciativa para aproximar a comunidade durante a Copa do Mundo e ajudar a Associação Semeando Amor.
@@ -632,6 +632,7 @@ export default function Home() {
                 <video 
                   src={assets.videoAssociacao} 
                   controls 
+                  preload="metadata"
                   className="h-full w-full object-cover"
                   poster={assets.community}
                 >
@@ -815,12 +816,8 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mt-12 grid gap-4 grid-cols-2 md:grid-cols-4">
-               {[1,2,3,4].map(i => (
-                 <div key={i} className="aspect-square overflow-hidden rounded-3xl shadow-lg">
-                    <SafeImage src={assets.community} alt={`Comunidade ${i}`} className="h-full w-full object-cover transition-transform hover:scale-110" fallback={<VisualFallback children={null} className="h-full" />} />
-                 </div>
-               ))}
+            <div className="mt-16 overflow-hidden rounded-[3rem] shadow-2xl border-8 border-white">
+              <SafeImage src={assets.community} alt="Nossa Comunidade" className="h-[400px] w-full object-cover" fallback={<VisualFallback children={null} className="h-[400px]" />} />
             </div>
           </div>
         </section>
@@ -839,12 +836,12 @@ export default function Home() {
             
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
               {stadiumJourney.map((stadium) => (
-                <Card key={stadium.name} className="group relative h-[450px] overflow-hidden border-0 shadow-2xl transition-all hover:-translate-y-2">
+                <Card key={stadium.name} className="group relative h-[450px] overflow-hidden border-0 shadow-2xl transition-all hover:-translate-y-2 bg-emerald-900">
                   <SafeImage
                     src={stadium.image}
                     alt={stadium.name}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    fallback={<VisualFallback className="h-full w-full" children={null} />}
+                    className="absolute inset-0 h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-110 group-hover:opacity-100"
+                    fallback={<VisualFallback className="absolute inset-0 h-full w-full" children={null} />}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-emerald-950 via-emerald-950/20 to-transparent opacity-90 transition-opacity group-hover:opacity-100" />
                   
@@ -1191,7 +1188,7 @@ export default function Home() {
                 <h2 className="mt-4 font-display text-4xl sm:text-7xl">Ranking <span className="text-white">Solidário</span></h2>
               </div>
               <p className="max-w-md text-lg font-medium text-emerald-200/70">
-                A pontuação é liberada assim que sua doação for confirmada pela equipe da HM Bazar.
+                A pontuação é liberada assim que sua doação for confirmada pela equipe da HM Bazar e Conveniência.
               </p>
             </div>
 
@@ -1269,7 +1266,7 @@ export default function Home() {
               <div className="rounded-[2.5rem] bg-white/5 p-8 backdrop-blur-sm border border-white/10">
                 <div className="mb-8 flex items-center gap-4">
                    <SafeImage src={assets.hmLogo} alt="HM" className="h-14 w-14 rounded-xl bg-white p-2" fallback={null} />
-                   <h3 className="font-display text-3xl">HM Bazar</h3>
+                   <h3 className="font-display text-3xl">HM Bazar e Conveniência</h3>
                 </div>
                 <div className="flex flex-wrap gap-4">
                   {[
@@ -1358,7 +1355,7 @@ export default function Home() {
         </div>
         
         <div className="container mt-16 border-t border-stone-100 pt-8 text-center text-xs font-black uppercase tracking-widest text-stone-400">
-          © 2026 HM Bazar & Associação Semeando Amor • Todos os direitos reservados
+          © 2026 HM Bazar e Conveniência & Associação Semeando Amor • Todos os direitos reservados
         </div>
       </footer>
 
