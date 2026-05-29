@@ -94,6 +94,8 @@ const assets = {
   hmLogo: "/assets/hm-logo.png",
   semeandoLogo: "/assets/semeando-amor-logo.png",
   hmStore: "/assets/hm-fachada.jpg",
+  hmStoreMain: "/assets/foto-hm/hm-store-main.jpeg",
+  hmStoreShelves: "/assets/foto-hm/hm-store-shelves.jpeg",
   stadiumHero: "/assets/brazil-fans-hero.jpg",
   community: "/assets/community.jpg",
   stadiumAzteca: "/assets/stadium-azteca.jpg",
@@ -103,11 +105,48 @@ const assets = {
 };
 
 const stadiumJourney = [
-  { name: "Estádio Azteca", city: "Cidade do México", country: "México", image: assets.stadiumAzteca },
-  { name: "MetLife Stadium", city: "East Rutherford", country: "Estados Unidos", image: assets.stadiumMetlife },
-  { name: "SoFi Stadium", city: "Inglewood", country: "Estados Unidos", image: assets.stadiumSofi },
-  { name: "AT&T Stadium", city: "Arlington", country: "Estados Unidos", image: assets.stadiumAtt },
+  { 
+    name: "Estádio Azteca", 
+    city: "Cidade do México", 
+    country: "México", 
+    image: assets.stadiumAzteca,
+    curiosity: "Primeiro estádio da história a receber três Copas do Mundo."
+  },
+  { 
+    name: "MetLife Stadium", 
+    city: "East Rutherford", 
+    country: "Estados Unidos", 
+    image: assets.stadiumMetlife,
+    curiosity: "Será o palco da grande final da Copa do Mundo 2026."
+  },
+  { 
+    name: "SoFi Stadium", 
+    city: "Inglewood", 
+    country: "Estados Unidos", 
+    image: assets.stadiumSofi,
+    curiosity: "O estádio mais caro do mundo, com uma tela LED gigante suspensa."
+  },
+  { 
+    name: "AT&T Stadium", 
+    city: "Arlington", 
+    country: "Estados Unidos", 
+    image: assets.stadiumAtt,
+    curiosity: "Possui um dos maiores telões suspensos do planeta."
+  },
 ];
+
+const socialLinks = {
+  hm: {
+    instagram: "https://instagram.com/hm_bazar",
+    facebook: "https://facebook.com/hmbazar",
+    whatsapp: hmWhatsAppUrl,
+  },
+  associacao: {
+    instagram: "https://instagram.com/semeandoamor",
+    facebook: "https://facebook.com/semeandoamor",
+    whatsapp: "https://wa.me/5511999999999", // Placeholder for Association
+  }
+};
 
 function normalizePhone(value: string) {
   return value.replace(/\D/g, "");
@@ -416,67 +455,78 @@ export default function Home() {
         <section
           className="relative isolate overflow-hidden bg-[#06351f] text-white"
           style={{
-            backgroundImage: `linear-gradient(110deg, rgba(2, 44, 34, 0.88), rgba(21, 128, 61, 0.58) 46%, rgba(29, 78, 216, 0.44)), url(${assets.stadiumHero})`,
+            backgroundImage: `linear-gradient(110deg, rgba(2, 44, 34, 0.92), rgba(21, 128, 61, 0.65) 46%, rgba(29, 78, 216, 0.44)), url(${assets.stadiumHero})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(250,204,21,0.34),transparent_24%),radial-gradient(circle_at_18%_80%,rgba(37,99,235,0.30),transparent_28%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#fffaf0] to-transparent" />
-          <div className="container relative grid gap-8 pb-20 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-24 lg:pt-18">
-            <div>
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-4 py-2 text-sm font-black shadow-2xl backdrop-blur">
-                <Flag className="h-4 w-4 text-yellow-300" />
-                Brasil, Copa e torcida do bairro
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(250,204,21,0.4),transparent_30%),radial-gradient(circle_at_18%_80%,rgba(37,99,235,0.35),transparent_35%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#fffaf0] to-transparent" />
+          
+          <div className="container relative z-10 grid gap-12 pb-24 pt-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pt-20">
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/30 bg-white/10 px-5 py-2.5 text-sm font-black shadow-2xl backdrop-blur-md">
+                <span className="flex h-2 w-2 animate-ping rounded-full bg-yellow-400" />
+                MOVIMENTO COMUNITÁRIO 2026
               </div>
-              <h1 className="max-w-4xl font-display text-4xl leading-[0.98] text-white sm:text-5xl lg:text-7xl">
-                🇧🇷 TORÇA PELO BRASIL NA COPA 2026
+              
+              <h1 className="max-w-4xl font-display text-5xl leading-[0.95] text-white sm:text-7xl lg:text-8xl">
+                TORCIDA QUE <span className="text-yellow-300">TRANSFORMA</span>
               </h1>
-              <p className="mt-5 max-w-2xl text-lg font-bold text-emerald-50 sm:text-xl">
-                Faça seus palpites, concorra a prêmios e ajude a Associação Semeando Amor.
+              
+              <p className="max-w-xl text-xl font-bold leading-relaxed text-emerald-50 sm:text-2xl">
+                O Bolão Solidário da HM une o bairro pelo Brasil e pela Associação Semeando Amor.
               </p>
-              <p className="mt-4 max-w-2xl text-base text-white/86 sm:text-lg">
-                Entre no clima da Copa pelo WhatsApp, acompanhe os jogos do Brasil e transforme torcida em impacto real
-                na comunidade.
-              </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <Button
                   onClick={() => scrollToSection("participar")}
-                  className="h-13 bg-yellow-300 px-7 text-base font-black text-emerald-950 shadow-xl hover:bg-yellow-200"
+                  className="group h-14 bg-yellow-300 px-8 text-lg font-black text-emerald-950 shadow-[0_20px_50px_rgba(250,204,21,0.3)] hover:bg-yellow-200"
                 >
-                  Participar agora
-                  <ArrowRight className="h-5 w-5" />
+                  Quero participar agora
+                  <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </Button>
                 <Button
                   onClick={() => scrollToSection("ranking")}
                   variant="outline"
-                  className="h-13 border-white/70 bg-white/10 px-7 text-base font-black text-white shadow-xl hover:bg-white hover:text-emerald-950"
+                  className="h-14 border-white/40 bg-white/5 px-8 text-lg font-black text-white backdrop-blur-sm hover:bg-white hover:text-emerald-950"
                 >
-                  Ver ranking
-                  <Trophy className="h-5 w-5" />
+                  Ver Ranking Solidário
                 </Button>
+              </div>
+
+              {/* Social Proof Counters */}
+              <div className="grid grid-cols-2 gap-4 pt-4 sm:grid-cols-4">
+                {[
+                  { label: "Participantes", value: ranking.length || "50+", icon: Users },
+                  { label: "Doações", value: "120+", icon: HandHeart },
+                  { label: "Prêmios", value: "3", icon: Gift },
+                  { label: "Sorteios", value: "Mensais", icon: Sparkles },
+                ].map((stat) => (
+                  <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm">
+                    <stat.icon className="mb-2 h-5 w-5 text-yellow-300" />
+                    <p className="font-display text-2xl text-white">{stat.value}</p>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-200">{stat.label}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-white/20 bg-white/14 p-4 shadow-2xl backdrop-blur-md sm:p-5">
-              <div className="rounded-[1.5rem] bg-white p-4 text-emerald-950 shadow-xl">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  {[
-                    ["Brasil", "jogos em destaque"],
-                    ["Prêmios", "top 3 preparado"],
-                    ["Sorteio", "números da sorte"],
-                  ].map(([value, label]) => (
-                    <div key={label} className="rounded-2xl bg-emerald-50 p-4 text-center">
-                      <p className="font-display text-2xl text-blue-700 sm:text-3xl">{value}</p>
-                      <p className="mt-1 text-xs font-black uppercase text-emerald-900">{label}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 rounded-2xl bg-[linear-gradient(135deg,#fef3c7,#dbeafe,#dcfce7)] p-5">
-                  <p className="font-display text-xl">5 segundos para entender: Copa, Brasil, prêmio e causa.</p>
-                  <p className="mt-2 text-sm font-semibold text-stone-700">
-                    Você participa do bolão, ajuda a Semeando Amor e ainda concorre pelo ranking e pelo sorteio solidário.
-                  </p>
+            <div className="hidden lg:block">
+              <div className="relative">
+                <div className="absolute -inset-4 rounded-[3rem] bg-yellow-400/20 blur-3xl" />
+                <div className="relative overflow-hidden rounded-[2.5rem] border border-white/20 bg-white/10 p-6 shadow-2xl backdrop-blur-md">
+                   <div className="flex items-center gap-4 border-b border-white/10 pb-6">
+                      <SafeImage src={assets.hmLogo} alt="HM" className="h-16 w-16 rounded-xl bg-white p-2 shadow-lg" fallback={<div className="h-16 w-16 rounded-xl bg-emerald-800" />} />
+                      <div className="h-8 w-px bg-white/20" />
+                      <SafeImage src={assets.semeandoLogo} alt="Semeando" className="h-16 w-16 rounded-xl bg-white p-2 shadow-lg" fallback={<div className="h-16 w-16 rounded-xl bg-rose-800" />} />
+                   </div>
+                   <div className="pt-6">
+                      <p className="font-display text-2xl text-white">Juntos pelo Bairro</p>
+                      <p className="mt-2 text-emerald-50/80">
+                        Cada palpite no site é uma doação confirmada na HM que ajuda diretamente a Associação Semeando Amor.
+                      </p>
+                   </div>
                 </div>
               </div>
             </div>
@@ -498,40 +548,89 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="porque-existimos" className="bg-white py-16">
+        <section id="conheca-hm" className="bg-white py-20">
           <div className="container grid gap-12 lg:grid-cols-2 lg:items-center">
-            <div className="relative">
-              <div className="absolute -left-4 -top-4 h-24 w-24 rounded-full bg-yellow-200/50 blur-2xl" />
-              <p className="relative font-black uppercase tracking-widest text-rose-700">O Propósito</p>
-              <h2 className="relative mt-3 font-display text-4xl leading-tight text-emerald-950 sm:text-5xl">
-                Por que este bolão existe?
-              </h2>
-              <div className="mt-8 space-y-6 text-lg font-medium leading-relaxed text-stone-700">
-                <p>
-                  A Copa do Mundo une pessoas. Nós acreditamos que ela também pode unir a nossa comunidade.
-                </p>
-                <p>
-                  O <span className="font-black text-emerald-900">Bolão Solidário HM + Semeando Amor</span> nasceu para transformar a paixão pelo futebol em apoio real para quem precisa.
-                </p>
-                <p>
-                  Cada participação fortalece as ações sociais da <span className="text-rose-700 underline decoration-rose-300 underline-offset-4">Associação Semeando Amor</span> e aproxima a vizinhança da HM Bazar e Conveniência.
-                </p>
-                <div className="rounded-2xl bg-emerald-50 p-6 border-l-4 border-emerald-800">
-                  <p className="text-emerald-950">
-                    Aqui você não faz apostas financeiras. Você participa, torce, ajuda e faz parte de algo maior. 
-                    <span className="block mt-2 font-black">Transformamos palpites em solidariedade.</span>
-                  </p>
+            <div className="order-2 lg:order-1">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="overflow-hidden rounded-3xl shadow-xl">
+                    <SafeImage src={assets.hmStoreMain} alt="HM Bazar Loja" className="aspect-[4/5] object-cover" fallback={<VisualFallback className="aspect-[4/5]" children={null} />} />
+                  </div>
+                  <div className="overflow-hidden rounded-3xl shadow-xl">
+                    <SafeImage src={assets.hmStoreShelves} alt="Produtos HM" className="aspect-square object-cover" fallback={<VisualFallback className="aspect-square" children={null} />} />
+                  </div>
+                </div>
+                <div className="pt-8">
+                  <div className="overflow-hidden rounded-3xl shadow-xl">
+                    <SafeImage src={assets.hmStore} alt="HM Fachada" className="aspect-[4/6] object-cover" fallback={<VisualFallback className="aspect-[4/6]" children={null} />} />
+                  </div>
                 </div>
               </div>
             </div>
-            <div className="grid gap-4">
-              <div className="overflow-hidden rounded-[2.5rem] shadow-2xl">
-                <SafeImage
-                  src={assets.community}
-                  alt="Comunidade apoiada"
-                  className="h-[400px] w-full object-cover"
-                  fallback={<VisualFallback className="h-[400px] w-full"><Users className="h-16 w-16 text-yellow-200" /></VisualFallback>}
-                />
+            <div className="order-1 lg:order-2">
+              <p className="font-black uppercase tracking-widest text-emerald-800">Apoio Local</p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-6xl">
+                Conheça a <span className="text-blue-700">HM Bazar</span>
+              </h2>
+              <p className="mt-8 text-xl font-medium leading-relaxed text-stone-600">
+                A HM Bazar e Conveniência apoia esta iniciativa para aproximar a comunidade durante a Copa do Mundo e ajudar a Associação Semeando Amor.
+              </p>
+              <p className="mt-4 text-stone-500">
+                Mais que um comércio, a HM é um ponto de encontro no bairro. Aqui você confirma sua doação e faz parte do nosso movimento solidário.
+              </p>
+              
+              <div className="mt-10 space-y-4">
+                <div className="flex items-center gap-4 rounded-2xl bg-emerald-50 p-4">
+                  <MapPin className="h-6 w-6 text-emerald-800" />
+                  <p className="font-bold text-emerald-950">{hmAddress}</p>
+                </div>
+                <a 
+                  href={hmWhatsAppUrl} 
+                  target="_blank" 
+                  rel="noopener"
+                  className="flex items-center justify-between rounded-2xl border-2 border-emerald-900/10 p-4 transition-colors hover:bg-emerald-50"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-full bg-emerald-100 p-2">
+                       <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-emerald-700">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.634 1.437h.005c6.558 0 11.897-5.335 11.9-11.894a11.83 11.83 0 00-3.415-8.421z" />
+                      </svg>
+                    </div>
+                    <span className="font-bold text-emerald-950">Fale com a HM</span>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-stone-400" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="conheca-associacao" className="bg-rose-50 py-20">
+          <div className="container grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div>
+              <p className="font-black uppercase tracking-widest text-rose-700">Coração do Projeto</p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-rose-950 sm:text-6xl">
+                Semeando <span className="text-rose-600">Amor</span>
+              </h2>
+              <div className="mt-8 space-y-6 text-xl font-medium leading-relaxed text-stone-700">
+                <p>
+                  A <span className="font-black text-rose-900">Associação Semeando Amor</span>, liderada pela Tia Mônica, é o refúgio e o futuro de muitas famílias do nosso bairro.
+                </p>
+                <p>
+                  Através de atividades sociais, educacionais e esportivas, a associação transforma vidas diariamente. As doações deste bolão ajudam diretamente na manutenção dessas aulas e no acolhimento da comunidade.
+                </p>
+                <div className="rounded-2xl bg-white p-6 shadow-xl shadow-rose-900/5">
+                  <p className="text-base text-stone-600">
+                    "Futebol é alegria, e alegria compartilhada vira amor. Cada doação é um passo para um futuro melhor para nossas crianças."
+                  </p>
+                  <p className="mt-4 font-display text-xl text-rose-900">— Tia Mônica</p>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="absolute -inset-4 rounded-[2rem] bg-rose-200/50 blur-2xl" />
+              <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl">
+                <SafeImage src={assets.community} alt="Atividades Associação" className="h-[500px] w-full object-cover" fallback={<VisualFallback className="h-[500px] w-full" children={null} />} />
               </div>
             </div>
           </div>
@@ -679,29 +778,42 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-white py-12">
+        <section id="jornada-copa" className="bg-white py-20">
           <div className="container">
-            <div className="mb-7">
-              <p className="font-black uppercase tracking-wide text-blue-700">A Jornada da Copa</p>
-              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Um evento mundial passando por estádios gigantes.</h2>
+            <div className="mb-12">
+              <p className="font-black uppercase tracking-widest text-blue-700">Exploração</p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-6xl">
+                A Jornada da <span className="text-yellow-500">Copa</span>
+              </h2>
+              <p className="mt-4 max-w-2xl text-lg font-medium text-stone-600">
+                Acompanhe os palcos onde o Brasil vai buscar o hexa. Do México aos Estados Unidos, a emoção está garantida.
+              </p>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {stadiumJourney.map((stadium) => (
-                <Card key={stadium.name} className="overflow-hidden border-0 bg-white shadow-[0_18px_42px_rgba(15,23,42,0.12)]">
-                  <SafeImage
-                    src={stadium.image}
-                    alt={stadium.name}
-                    className="h-40 w-full object-cover"
-                    fallback={
-                      <VisualFallback className="h-40 w-full">
-                        <Trophy className="h-9 w-9 text-yellow-200" />
-                      </VisualFallback>
-                    }
-                  />
-                  <div className="p-4">
-                    <p className="font-display text-lg text-emerald-950">{stadium.name}</p>
-                    <p className="mt-1 text-sm font-bold text-stone-600">
-                      {stadium.city} • {stadium.country}
+                <Card key={stadium.name} className="group overflow-hidden border-0 bg-white shadow-2xl transition-all hover:-translate-y-2">
+                  <div className="relative h-48 overflow-hidden">
+                    <SafeImage
+                      src={stadium.image}
+                      alt={stadium.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      fallback={
+                        <VisualFallback className="h-full w-full">
+                          <Trophy className="h-9 w-9 text-yellow-200" />
+                        </VisualFallback>
+                      }
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 to-transparent" />
+                    <div className="absolute bottom-3 left-4">
+                      <p className="font-display text-lg text-white">{stadium.name}</p>
+                      <p className="text-xs font-bold text-emerald-200">{stadium.city}, {stadium.country}</p>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-xs font-black uppercase tracking-widest text-yellow-600">Curiosidade</p>
+                    <p className="mt-2 text-sm font-medium leading-relaxed text-stone-600">
+                      {stadium.curiosity}
                     </p>
                   </div>
                 </Card>
@@ -710,199 +822,110 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-white py-12">
-          <div className="container grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-            <div className="overflow-hidden rounded-[2rem] shadow-2xl">
-              <SafeImage
-                src={assets.community}
-                alt="Comunidade apoiada pela Associação Semeando Amor"
-                className="h-[320px] w-full object-cover sm:h-[420px]"
-                fallback={
-                  <VisualFallback className="h-[320px] w-full sm:h-[420px]">
-                    <div className="text-center">
-                      <Users className="mx-auto h-12 w-12 text-yellow-200" />
-                      <p className="mt-3 font-display text-2xl">Comunidade</p>
-                    </div>
-                  </VisualFallback>
-                }
-              />
-            </div>
-            <div>
-              <p className="font-black uppercase tracking-wide text-rose-700">A causa</p>
-              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">
-                Semeando Amor com a Tia Mônica
-              </h2>
-              <p className="mt-5 text-lg font-medium leading-8 text-stone-700">
-                A Associação Semeando Amor realiza ações sociais com foco em comunidade, educação, cuidado e acolhimento.
-                Neste bolão, a Copa vira ponto de encontro: cada doação fortalece uma rede local de apoio.
-              </p>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl bg-emerald-50 p-5">
-                  <Heart className="h-6 w-6 text-rose-700" />
-                  <p className="mt-3 font-black text-emerald-950">Doações com destino claro</p>
-                  <p className="mt-1 text-sm text-stone-600">Alimentos, roupas e brinquedos para ações sociais.</p>
-                </div>
-                <div className="rounded-2xl bg-yellow-50 p-5">
-                  <ShieldCheck className="h-6 w-6 text-emerald-800" />
-                  <p className="mt-3 font-black text-emerald-950">Confirmação pela organização</p>
-                  <p className="mt-1 text-sm text-stone-600">A participação entra no ranking após validação.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="container grid gap-8 py-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
-          <div>
-            <p className="font-black uppercase tracking-wide text-blue-700">Realização e Apoio</p>
-            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">HM e Semeando Amor juntas pela comunidade.</h2>
-            <p className="mt-5 text-lg font-medium leading-8 text-stone-700">
-              A HM aparece como apoiadora oficial da ação, recebe participantes, ajuda na organização das entregas e
-              conecta a campanha com quem vive o bairro no dia a dia.
-            </p>
-            <div className="mt-6 grid max-w-xl grid-cols-2 gap-3">
-              <div className="rounded-2xl bg-white p-4 shadow-sm">
-                <SafeImage
-                  src={assets.hmLogo}
-                  alt="HM Bazar e Conveniência"
-                  className="h-16 w-full object-contain"
-                  fallback={<VisualFallback className="h-16 rounded-xl text-xs font-black">HM</VisualFallback>}
-                />
-              </div>
-              <div className="rounded-2xl bg-white p-4 shadow-sm">
-                <SafeImage
-                  src={assets.semeandoLogo}
-                  alt="Associação Semeando Amor"
-                  className="h-16 w-full object-contain"
-                  fallback={
-                    <VisualFallback className="h-16 rounded-xl">
-                      <Heart className="h-5 w-5" />
-                    </VisualFallback>
-                  }
-                />
-              </div>
-            </div>
-            <div className="mt-6 space-y-3">
-              {[hmAddress, associationAddress].map((address) => (
-                <div key={address} className="flex gap-3 rounded-2xl bg-white p-4 shadow-sm">
-                  <MapPin className="mt-1 h-5 w-5 shrink-0 text-rose-700" />
-                  <p className="font-bold text-emerald-950">{address}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="overflow-hidden rounded-[2rem] shadow-2xl">
-            <SafeImage
-              src={assets.hmStore}
-              alt="Fachada da HM Bazar e Conveniência"
-              className="h-[320px] w-full object-cover sm:h-[420px]"
-              fallback={
-                <VisualFallback className="h-[320px] w-full sm:h-[420px]">
-                  <div className="text-center">
-                    <Sparkles className="mx-auto h-12 w-12 text-yellow-200" />
-                    <p className="mt-3 font-display text-2xl">HM Bazar</p>
-                  </div>
-                </VisualFallback>
-              }
-            />
-          </div>
-        </section>
-
-        <section id="participar" className="bg-[linear-gradient(180deg,#fffaf0,#ecfdf5)] py-12">
-          <div className="container grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
-            <Card className="border-0 bg-white p-5 shadow-[0_22px_60px_rgba(20,83,45,0.14)] sm:p-7">
-              <div className="rounded-3xl bg-[linear-gradient(135deg,#14532d,#16a34a_52%,#b91c1c)] p-5 text-white">
-                <p className="font-black uppercase text-yellow-200">Participar agora</p>
-                <h2 className="mt-2 font-display text-3xl">Entre no bolão fazendo o bem.</h2>
-                <p className="mt-3 text-sm font-medium text-white/88">
-                  Preencha seus dados, escolha o tipo de doação e guarde seu código. A equipe confirma a entrega para
-                  liberar sua pontuação.
+        <section id="participar" className="bg-[#fffaf0] py-24">
+          <div className="container grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+            <Card className="border-0 bg-white p-6 shadow-[0_30px_70px_rgba(20,83,45,0.15)] sm:p-10">
+              <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#14532d,#16a34a_52%,#b91c1c)] p-8 text-white shadow-xl">
+                <p className="font-black uppercase tracking-widest text-yellow-300">Adesão Solidária</p>
+                <h2 className="mt-4 font-display text-4xl leading-tight">Entre no bolão fazendo o bem.</h2>
+                <p className="mt-4 text-emerald-50/90">
+                  Preencha seus dados abaixo para gerar seu código de participação. Depois, basta entregar sua doação na HM para liberar seus palpites no ranking.
                 </p>
               </div>
 
-              <form onSubmit={createParticipant} className="mt-6 space-y-4">
-                <label className="block">
-                  <span className="text-sm font-black text-emerald-950">Nome completo</span>
-                  <input
-                    required
-                    name="fullName"
-                    placeholder="Seu nome para o ranking"
-                    className="mt-2 h-12 w-full rounded-xl border border-emerald-900/15 bg-emerald-50/50 px-4 font-bold outline-none focus:border-emerald-700 focus:bg-white"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-black text-emerald-950">WhatsApp</span>
-                  <input
-                    required
-                    name="whatsapp"
-                    inputMode="tel"
-                    placeholder="(11) 99999-9999"
-                    className="mt-2 h-12 w-full rounded-xl border border-emerald-900/15 bg-emerald-50/50 px-4 font-bold outline-none focus:border-emerald-700 focus:bg-white"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-sm font-black text-emerald-950">Doação</span>
-                  <select
-                    required
-                    name="donationType"
-                    className="mt-2 h-12 w-full rounded-xl border border-emerald-900/15 bg-emerald-50/50 px-4 font-bold outline-none focus:border-emerald-700 focus:bg-white"
-                  >
-                    {donationTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.label} - {type.voucherDiscount}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="text-sm font-black text-emerald-950">Ponto de entrega</span>
-                  <select
-                    required
-                    name="deliveryPoint"
-                    className="mt-2 h-12 w-full rounded-xl border border-emerald-900/15 bg-emerald-50/50 px-4 font-bold outline-none focus:border-emerald-700 focus:bg-white"
-                  >
-                    <option value={hmAddress}>{hmAddress}</option>
-                    <option value={associationAddress}>{associationAddress}</option>
-                  </select>
-                </label>
-                <div className="rounded-2xl bg-yellow-50 p-4 text-sm font-bold text-stone-700">
-                  A doação será conferida pela organização. Depois disso, seu nome aparece oficialmente no ranking.
+              <form onSubmit={createParticipant} className="mt-10 space-y-6">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Seu Nome</span>
+                    <input
+                      required
+                      name="fullName"
+                      placeholder="Como quer aparecer no ranking"
+                      className="mt-2 h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white focus:ring-4 focus:ring-emerald-700/5"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Seu WhatsApp</span>
+                    <input
+                      required
+                      name="whatsapp"
+                      inputMode="tel"
+                      placeholder="(11) 99999-9999"
+                      className="mt-2 h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white focus:ring-4 focus:ring-emerald-700/5"
+                    />
+                  </label>
                 </div>
-                <Button disabled={saving} className="h-13 w-full bg-rose-700 text-base font-black text-white hover:bg-rose-800">
-                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Heart className="h-5 w-5" />}
-                  Criar participação
+                
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Tipo de Doação</span>
+                    <select
+                      required
+                      name="donationType"
+                      className="mt-2 h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white"
+                    >
+                      {donationTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.label} - {type.voucherDiscount}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Onde vai entregar?</span>
+                    <select
+                      required
+                      name="deliveryPoint"
+                      className="mt-2 h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white"
+                    >
+                      <option value={hmAddress}>{hmAddress}</option>
+                      <option value={associationAddress}>{associationAddress}</option>
+                    </select>
+                  </label>
+                </div>
+
+                <div className="flex items-start gap-3 rounded-2xl bg-yellow-50 p-5 border border-yellow-200">
+                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-800" />
+                   <p className="text-sm font-bold text-stone-700">
+                      Sua participação será confirmada pela equipe da HM após o recebimento da doação. É 100% transparente e comunitário.
+                   </p>
+                </div>
+
+                <Button disabled={saving} className="h-16 w-full rounded-2xl bg-rose-700 text-xl font-black text-white shadow-2xl hover:bg-rose-800">
+                  {saving ? <Loader2 className="h-6 w-6 animate-spin" /> : <Heart className="mr-2 h-6 w-6" />}
+                  Confirmar minha participação
                 </Button>
               </form>
             </Card>
 
-            <div className="space-y-6">
-              <Card className="border-0 bg-white p-5 shadow-[0_18px_45px_rgba(20,83,45,0.10)] sm:p-7">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-800 text-white">
-                    <CheckCircle2 className="h-6 w-6" />
+            <div className="space-y-8">
+              <Card className="border-0 bg-white p-8 shadow-xl sm:p-10">
+                <div className="flex items-start gap-5">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-800 text-white shadow-lg shadow-emerald-900/20">
+                    <CheckCircle2 className="h-8 w-8" />
                   </div>
                   <div>
-                    <h2 className="font-display text-2xl text-emerald-950">Já tenho código</h2>
-                    <p className="mt-1 text-sm font-medium text-stone-600">
-                      Continue seus palpites usando o código gerado e o WhatsApp cadastrado.
+                    <h2 className="font-display text-3xl text-emerald-950">Já participo!</h2>
+                    <p className="mt-2 font-medium text-stone-600">
+                      Acesse seu cartão do bolão para continuar seus palpites ou conferir seu código.
                     </p>
                   </div>
                 </div>
-                <form onSubmit={accessParticipant} className="mt-5 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+                <form onSubmit={accessParticipant} className="mt-8 flex flex-col gap-4 sm:flex-row">
                   <input
                     value={accessCode}
                     onChange={(event) => setAccessCode(event.target.value)}
-                    placeholder="BOLAO-2026-0000"
-                    className="h-12 rounded-xl border border-emerald-900/15 bg-emerald-50/50 px-4 font-bold outline-none focus:border-emerald-700 focus:bg-white"
+                    placeholder="Seu Código (Ex: BOLAO-2026-0000)"
+                    className="h-14 flex-1 rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none focus:border-emerald-700 focus:bg-white"
                   />
                   <input
                     value={accessWhatsApp}
                     onChange={(event) => setAccessWhatsApp(event.target.value)}
                     placeholder="WhatsApp"
-                    className="h-12 rounded-xl border border-emerald-900/15 bg-emerald-50/50 px-4 font-bold outline-none focus:border-emerald-700 focus:bg-white"
+                    className="h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none focus:border-emerald-700 focus:bg-white sm:w-40"
                   />
-                  <Button disabled={saving} className="h-12 bg-emerald-800 px-6 font-black text-white hover:bg-emerald-900">
-                    Entrar
+                  <Button disabled={saving} className="h-14 bg-emerald-800 px-8 font-black text-white hover:bg-emerald-900">
+                    Acessar
                   </Button>
                 </form>
               </Card>
@@ -910,30 +933,35 @@ export default function Home() {
               {participant && (
                 <div
                   id="participante"
-                  className="rounded-[2rem] border border-emerald-200 bg-white p-5 shadow-[0_18px_45px_rgba(20,83,45,0.10)] sm:p-7"
+                  className="relative overflow-hidden rounded-[2.5rem] border-2 border-emerald-200 bg-white p-8 shadow-2xl transition-all sm:p-10"
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-4">
-                    <div>
-                      <p className="font-black uppercase text-rose-700">Seu cartão do bolão</p>
-                      <h3 className="mt-1 font-display text-2xl text-emerald-950">{participant.full_name}</h3>
-                      <p className="mt-2 text-sm font-black text-stone-600">{participant.code}</p>
+                  <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-50" />
+                  <div className="relative">
+                    <div className="flex flex-wrap items-start justify-between gap-6">
+                      <div>
+                        <p className="font-black uppercase tracking-widest text-rose-700">Seu Cartão Oficial</p>
+                        <h3 className="mt-2 font-display text-4xl text-emerald-950">{participant.full_name}</h3>
+                        <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1 text-sm font-black text-emerald-900">
+                          <Copy className="h-4 w-4" />
+                          {participant.code}
+                        </div>
+                      </div>
+                      <span
+                        className={`rounded-full px-5 py-2.5 text-sm font-black shadow-sm ${
+                          participant.donation_confirmed ? "bg-emerald-700 text-white" : "bg-yellow-300 text-emerald-950"
+                        }`}
+                      >
+                        {participant.donation_confirmed ? "Doação Confirmada ✓" : "Aguardando Doação..."}
+                      </span>
                     </div>
-                    <span
-                      className={`rounded-full px-4 py-2 text-sm font-black ${
-                        participant.donation_confirmed ? "bg-emerald-700 text-white" : "bg-yellow-300 text-emerald-950"
-                      }`}
-                    >
-                      {participant.donation_confirmed ? "Doação confirmada" : "Aguardando confirmação"}
-                    </span>
-                  </div>
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <Button onClick={() => copyCode(participant.code)} variant="outline" className="h-12 font-black">
-                      <Copy className="h-4 w-4" />
-                      {copied ? "Código copiado" : "Copiar código"}
-                    </Button>
-                    <Button onClick={openWhatsApp} className="h-12 bg-emerald-800 font-black text-white hover:bg-emerald-900">
-                      Avisar HM no WhatsApp
-                    </Button>
+                    <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                      <Button onClick={() => copyCode(participant.code)} variant="outline" className="h-14 rounded-2xl border-2 font-black">
+                        {copied ? "Código Copiado!" : "Copiar meu Código"}
+                      </Button>
+                      <Button onClick={openWhatsApp} className="h-14 rounded-2xl bg-emerald-800 font-black text-white hover:bg-emerald-900">
+                        Avisar HM no WhatsApp
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -941,62 +969,71 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="palpites" className="container py-12">
-          <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <section id="palpites" className="container py-24">
+          <div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="font-black uppercase tracking-wide text-blue-700">Palpites</p>
-              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Primeiro Brasil. Depois, Copa inteira.</h2>
-              <p className="mt-2 text-sm font-bold text-stone-600">
+              <p className="font-black uppercase tracking-widest text-blue-700">Palpites Solidários</p>
+              <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-7xl">
+                BOLÃO DE <span className="text-yellow-500">PALPITES</span>
+              </h2>
+              
+              <div className="mt-8 flex flex-wrap gap-4">
+                 <div className="flex items-center gap-3 rounded-2xl bg-rose-50 px-5 py-3 text-sm font-black text-rose-700 border border-rose-100 shadow-sm">
+                    <ShieldCheck className="h-5 w-5" />
+                    ESTE NÃO É UM SITE DE APOSTAS
+                 </div>
+                 <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700 border border-emerald-100 shadow-sm">
+                    <HandHeart className="h-5 w-5" />
+                    PARTICIPAÇÃO POR DOAÇÃO
+                 </div>
+              </div>
+
+              <p className="mt-8 text-lg font-bold text-stone-500">
                 {participant
-                  ? `${predictedCount}/${matches.length} jogos preenchidos.`
-                  : "Crie ou acesse sua participação para salvar seus palpites."}
+                  ? `${predictedCount}/${matches.length} jogos palpitados. Boa sorte!`
+                  : "Cadastre-se ou acesse seu cartão para salvar seus palpites solidários."}
               </p>
             </div>
             <Button
               disabled={!participant || saving}
               form="predictions-form"
-              className="h-12 bg-rose-700 px-7 font-black text-white hover:bg-rose-800"
+              className="h-16 rounded-2xl bg-rose-700 px-12 text-xl font-black text-white shadow-[0_20px_40px_rgba(185,28,28,0.2)] hover:bg-rose-800"
             >
-              Salvar palpites solidários
+              Salvar meus Palpites
             </Button>
           </div>
 
-          <div className="mb-5 rounded-[1.5rem] bg-white p-3 shadow-sm">
+          <div className="mb-8 overflow-hidden rounded-[2rem] bg-white p-2 shadow-xl border border-stone-100">
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setPredictionMode("brasil")}
-                className={`rounded-2xl px-4 py-3 text-sm font-black ${
-                  predictionMode === "brasil" ? "bg-blue-700 text-white" : "bg-emerald-50 text-emerald-950"
+                className={`flex h-14 items-center justify-center rounded-2xl text-base font-black transition-all ${
+                  predictionMode === "brasil" ? "bg-blue-700 text-white shadow-lg" : "bg-white text-emerald-950 hover:bg-stone-50"
                 }`}
               >
-                🇧🇷 Modo Simples
+                🇧🇷 SÓ JOGOS DO BRASIL
               </button>
               <button
                 type="button"
                 onClick={() => setPredictionMode("completo")}
-                className={`rounded-2xl px-4 py-3 text-sm font-black ${
-                  predictionMode === "completo" ? "bg-blue-700 text-white" : "bg-emerald-50 text-emerald-950"
+                className={`flex h-14 items-center justify-center rounded-2xl text-base font-black transition-all ${
+                  predictionMode === "completo" ? "bg-blue-700 text-white shadow-lg" : "bg-white text-emerald-950 hover:bg-stone-50"
                 }`}
               >
-                Modo Completo
+                MODO COPA COMPLETA
               </button>
             </div>
-            <p className="mt-3 px-2 text-sm font-bold text-stone-600">
-              {predictionMode === "brasil"
-                ? "Você vê só os jogos do Brasil para começar rápido."
-                : "Você vê todos os jogos da Copa e pode filtrar por fase ou data."}
-            </p>
           </div>
 
           {predictionMode === "completo" && (
-            <div className="mb-5 grid gap-3 md:grid-cols-2">
+            <div className="mb-8 grid gap-4 md:grid-cols-2">
               <label className="relative block">
-                <span className="mb-2 block text-xs font-black uppercase text-emerald-950">Filtrar por fase</span>
+                <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-emerald-950">Filtrar Fase</span>
                 <select
                   value={phaseFilter}
                   onChange={(event) => setPhaseFilter(event.target.value)}
-                  className="h-12 w-full appearance-none rounded-xl border border-emerald-900/15 bg-white px-4 font-bold outline-none focus:border-emerald-700"
+                  className="h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-white px-5 font-bold outline-none focus:border-emerald-700"
                 >
                   {phases.map((phase) => (
                     <option key={phase} value={phase}>
@@ -1004,61 +1041,60 @@ export default function Home() {
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute bottom-3 right-4 h-5 w-5 text-emerald-900" />
+                <ChevronDown className="pointer-events-none absolute bottom-4 right-5 h-6 w-6 text-stone-400" />
               </label>
               <label className="relative block">
-                <span className="mb-2 block text-xs font-black uppercase text-emerald-950">Filtrar por data</span>
+                <span className="mb-2 block text-[10px] font-black uppercase tracking-widest text-emerald-950">Filtrar Data</span>
                 <select
                   value={dateFilter}
                   onChange={(event) => setDateFilter(event.target.value)}
-                  className="h-12 w-full appearance-none rounded-xl border border-emerald-900/15 bg-white px-4 font-bold outline-none focus:border-emerald-700"
+                  className="h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-white px-5 font-bold outline-none focus:border-emerald-700"
                 >
                   {dates.map((date) => (
                     <option key={date} value={date}>
-                      {date === "Todas" ? "Todas" : formatDate(date)}
+                      {date === "Todas" ? "Todas as Datas" : formatDate(date)}
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute bottom-3 right-4 h-5 w-5 text-emerald-900" />
+                <ChevronDown className="pointer-events-none absolute bottom-4 right-5 h-6 w-6 text-stone-400" />
               </label>
             </div>
           )}
 
           {loading ? (
-            <div className="flex items-center gap-2 rounded-2xl bg-white p-8 font-bold text-emerald-900 shadow-sm">
-              <Loader2 className="h-5 w-5 animate-spin" />
-              Carregando jogos...
+            <div className="flex h-64 flex-col items-center justify-center gap-4 rounded-[2.5rem] bg-white shadow-inner">
+              <Loader2 className="h-12 w-12 animate-spin text-rose-700" />
+              <p className="font-display text-2xl text-emerald-950">Preparando o campo...</p>
             </div>
           ) : (
-            <form id="predictions-form" onSubmit={savePredictions} className="grid gap-4 lg:grid-cols-2">
+            <form id="predictions-form" onSubmit={savePredictions} className="grid gap-6 lg:grid-cols-2">
               {visiblePredictionMatches.map((match) => (
                 <div
                   key={match.id}
-                  className={`overflow-hidden rounded-[1.5rem] border bg-white shadow-[0_14px_34px_rgba(20,83,45,0.08)] ${
+                  className={`relative overflow-hidden rounded-[2rem] border-2 bg-white transition-all hover:shadow-2xl ${
                     match.home_team.toLowerCase().includes("brasil") || match.away_team.toLowerCase().includes("brasil")
-                      ? "border-yellow-300 ring-2 ring-yellow-200"
-                      : "border-emerald-900/10"
+                      ? "border-yellow-300 ring-4 ring-yellow-400/10"
+                      : "border-stone-100"
                   }`}
                 >
-                  <div className="flex flex-wrap items-center gap-2 bg-emerald-950 px-4 py-3 text-xs font-black text-white">
-                    <span className="rounded-full bg-yellow-300 px-3 py-1 text-emerald-950">Jogo {match.id}</span>
-                    <span>{match.phase}</span>
-                    <span className="inline-flex items-center gap-1 text-emerald-100">
-                      <CalendarDays className="h-3.5 w-3.5" />
+                  <div className="flex flex-wrap items-center gap-3 bg-emerald-950 px-6 py-4 text-xs font-black text-white">
+                    <span className="rounded-lg bg-yellow-300 px-3 py-1.5 text-[10px] text-emerald-950">PARTIDA {match.id}</span>
+                    <span className="uppercase tracking-widest">{match.phase}</span>
+                    <span className="ml-auto inline-flex items-center gap-1.5 text-emerald-200">
+                      <CalendarDays className="h-4 w-4" />
                       {formatShortDate(match.match_date)}
                     </span>
                   </div>
-                  <div className="p-4">
-                    <div className="mb-4 flex items-start gap-2 text-sm font-bold text-stone-500">
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-rose-700" />
-                      <span>
-                        {match.venue}, {match.city}
-                      </span>
+                  <div className="p-6">
+                    <div className="mb-6 flex items-start gap-2 text-xs font-bold text-stone-400">
+                      <MapPin className="h-4 w-4 shrink-0 text-rose-600" />
+                      <span className="uppercase tracking-widest">{match.venue}, {match.city}</span>
                     </div>
-                    <div className="grid grid-cols-[1fr_80px_16px_80px_1fr] items-center gap-1 sm:grid-cols-[1fr_76px] sm:gap-3">
-                      <span className="min-w-0 rounded-xl bg-emerald-50 px-2 py-3 text-center text-sm font-black text-emerald-950 sm:px-4 sm:text-base">
+                    
+                    <div className="grid grid-cols-[1fr_90px_20px_90px_1fr] items-center gap-2 sm:grid-cols-[1fr_90px_40px_90px_1fr] sm:gap-4">
+                      <p className="text-right font-display text-base leading-tight text-emerald-950 sm:text-xl">
                         {match.home_team}
-                      </span>
+                      </p>
                       <input
                         aria-label={`Placar ${match.home_team}`}
                         disabled={!participant}
@@ -1072,9 +1108,9 @@ export default function Home() {
                             [predictionKey(match.id, "home")]: event.target.value,
                           }))
                         }
-                        className="h-14 rounded-xl border border-emerald-900/20 text-center text-2xl font-black text-rose-700 outline-none focus:border-rose-700 disabled:bg-stone-100 disabled:text-stone-400"
+                        className="h-16 rounded-2xl border-2 border-stone-100 bg-stone-50 text-center font-display text-3xl text-rose-700 outline-none focus:border-rose-700 focus:bg-white disabled:opacity-50"
                       />
-                      <span className="text-center font-bold text-stone-400">x</span>
+                      <span className="text-center font-display text-2xl text-stone-300">X</span>
                       <input
                         aria-label={`Placar ${match.away_team}`}
                         disabled={!participant}
@@ -1088,11 +1124,11 @@ export default function Home() {
                             [predictionKey(match.id, "away")]: event.target.value,
                           }))
                         }
-                        className="h-14 rounded-xl border border-emerald-900/20 text-center text-2xl font-black text-rose-700 outline-none focus:border-rose-700 disabled:bg-stone-100 disabled:text-stone-400"
+                        className="h-16 rounded-2xl border-2 border-stone-100 bg-stone-50 text-center font-display text-3xl text-rose-700 outline-none focus:border-rose-700 focus:bg-white disabled:opacity-50"
                       />
-                      <span className="min-w-0 rounded-xl bg-emerald-50 px-2 py-3 text-center text-sm font-black text-emerald-950 sm:px-4 sm:text-base">
+                      <p className="text-left font-display text-base leading-tight text-emerald-950 sm:text-xl">
                         {match.away_team}
-                      </span>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1101,62 +1137,68 @@ export default function Home() {
           )}
         </section>
 
-        <section id="ranking" className="bg-emerald-950 py-12 text-white">
+        <section id="ranking" className="bg-emerald-950 py-24 text-white">
           <div className="container">
-            <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <p className="font-black uppercase tracking-wide text-yellow-300">Ranking</p>
-                <h2 className="mt-2 font-display text-3xl sm:text-4xl">Quem está liderando o bem?</h2>
+                <p className="font-black uppercase tracking-widest text-yellow-300">Liderança</p>
+                <h2 className="mt-4 font-display text-4xl sm:text-7xl">Ranking <span className="text-white">Solidário</span></h2>
               </div>
-              <p className="max-w-md text-sm font-medium text-emerald-100">
-                Só entram no ranking participantes com doação confirmada pela organização.
+              <p className="max-w-md text-lg font-medium text-emerald-200/70">
+                A pontuação é liberada assim que sua doação for confirmada pela equipe da HM Bazar.
               </p>
             </div>
 
             {ranking.length === 0 ? (
-              <div className="rounded-[1.5rem] border border-white/20 bg-white/10 p-8 text-center font-bold text-emerald-50">
-                O ranking aparece depois que doações forem confirmadas e resultados lançados.
+              <div className="rounded-[3rem] border border-white/10 bg-white/5 p-16 text-center shadow-2xl backdrop-blur-sm">
+                 <Trophy className="mx-auto h-20 w-20 text-white/20" />
+                 <p className="mt-8 font-display text-3xl text-white/50">O campo está pronto para os primeiros heróis.</p>
+                 <p className="mt-2 text-emerald-100/40">As doações confirmadas aparecerão aqui em breve.</p>
               </div>
             ) : (
               <>
-                <div className="grid gap-4 md:grid-cols-3">
+                <div className="grid gap-6 md:grid-cols-3">
                   {topThree.map((row, index) => (
                     <div
                       key={row.id}
-                      className={`rounded-[1.5rem] border p-5 shadow-2xl ${
+                      className={`relative overflow-hidden rounded-[2.5rem] border-2 p-8 shadow-2xl transition-all hover:-translate-y-2 ${
                         index === 0
-                          ? "border-yellow-300 bg-yellow-300 text-emerald-950 md:-mt-4"
-                          : "border-white/20 bg-white/10 text-white"
+                          ? "border-yellow-300 bg-yellow-300 text-emerald-950 md:-mt-6"
+                          : "border-white/20 bg-white/5 text-white backdrop-blur-sm"
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-display text-4xl">{index + 1}º</span>
-                        <Medal className={index === 0 ? "h-8 w-8 text-rose-700" : "h-8 w-8 text-yellow-300"} />
+                        <span className="font-display text-5xl">{index + 1}º</span>
+                        <Medal className={index === 0 ? "h-12 w-12 text-rose-700" : "h-12 w-12 text-yellow-300"} />
                       </div>
-                      <p className="mt-5 font-display text-xl">{row.full_name}</p>
-                      <p className={index === 0 ? "mt-1 text-sm font-bold text-emerald-900" : "mt-1 text-sm font-bold text-emerald-100"}>
-                        {row.exact_scores} exatos • {row.scored_matches} jogos pontuados
+                      <p className="mt-8 font-display text-3xl leading-tight">{row.full_name}</p>
+                      <div className={`mt-2 text-sm font-bold ${index === 0 ? "text-emerald-900" : "text-emerald-200/70"}`}>
+                        {row.exact_scores} PLACARES EXATOS
+                        <span className="mx-2 opacity-30">•</span>
+                        {row.scored_matches} JOGOS
+                      </div>
+                      <p className={`mt-8 font-display text-5xl ${index === 0 ? "text-rose-700" : "text-yellow-300"}`}>
+                        {row.total_points} <span className="text-xl">PTS</span>
                       </p>
-                      <p className="mt-5 font-display text-4xl text-rose-700">{row.total_points}</p>
                     </div>
                   ))}
                 </div>
 
                 {remainingRanking.length > 0 && (
-                  <div className="mt-5 space-y-3">
+                  <div className="mt-8 space-y-4">
                     {remainingRanking.map((row, index) => (
                       <div
                         key={row.id}
-                        className="grid grid-cols-[44px_1fr_auto] items-center gap-3 rounded-2xl border border-white/10 bg-white/8 p-4"
+                        className="grid grid-cols-[60px_1fr_auto] items-center gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-colors hover:bg-white/10"
                       >
-                        <span className="font-display text-xl text-yellow-300">{index + 4}º</span>
+                        <span className="font-display text-2xl text-yellow-300/50">{index + 4}º</span>
                         <div>
-                          <p className="font-black text-white">{row.full_name}</p>
-                          <p className="text-sm text-emerald-100">
-                            {row.exact_scores} placares exatos • {row.scored_matches} jogos pontuados
+                          <p className="font-display text-2xl text-white">{row.full_name}</p>
+                          <p className="text-xs font-black uppercase tracking-widest text-emerald-400">
+                            {row.exact_scores} EXATOS • {row.scored_matches} PONTUADOS
                           </p>
                         </div>
-                        <p className="font-display text-2xl text-yellow-300">{row.total_points}</p>
+                        <p className="font-display text-3xl text-yellow-300">{row.total_points}</p>
                       </div>
                     ))}
                   </div>
@@ -1165,40 +1207,101 @@ export default function Home() {
             )}
           </div>
         </section>
-      </main>
 
-      <footer className="bg-white py-8">
-        <div className="container grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
-          <div className="flex items-center gap-3">
-            <SafeImage
-              src={assets.hmLogo}
-              alt="HM Bazar e Conveniência"
-              className="h-12 w-12 rounded-md border object-contain"
-              fallback={<VisualFallback className="h-12 w-12 rounded-md text-xs font-black">HM</VisualFallback>}
-            />
-            <SafeImage
-              src={assets.semeandoLogo}
-              alt="Associação Semeando Amor"
-              className="h-12 w-12 rounded-md border object-contain"
-              fallback={
-                <VisualFallback className="h-12 w-12 rounded-md">
-                  <Heart className="h-5 w-5" />
-                </VisualFallback>
-              }
-            />
-            <div>
-              <p className="font-display text-emerald-950">HM + Semeando Amor</p>
-              <p className="text-sm font-bold text-stone-600">Bolão Solidário da Copa 2026.</p>
+        <section id="acompanhe" className="bg-emerald-950 py-20 text-white">
+          <div className="container">
+            <div className="mb-12 text-center">
+              <p className="font-black uppercase tracking-widest text-yellow-300">Conexão</p>
+              <h2 className="mt-4 font-display text-4xl sm:text-6xl">Acompanhe a Campanha</h2>
+              <p className="mx-auto mt-4 max-w-2xl text-emerald-100/70">
+                Fique por dentro das doações, resultados e histórias que estamos construindo juntos.
+              </p>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-2">
+              {/* HM Socials */}
+              <div className="rounded-[2.5rem] bg-white/5 p-8 backdrop-blur-sm border border-white/10">
+                <div className="mb-8 flex items-center gap-4">
+                   <SafeImage src={assets.hmLogo} alt="HM" className="h-14 w-14 rounded-xl bg-white p-2" fallback={null} />
+                   <h3 className="font-display text-3xl">HM Bazar</h3>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { label: "Instagram", icon: "Instagram", href: socialLinks.hm.instagram, color: "bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600" },
+                    { label: "Facebook", icon: "Facebook", href: socialLinks.hm.facebook, color: "bg-blue-600" },
+                    { label: "WhatsApp", icon: "MessageCircle", href: socialLinks.hm.whatsapp, color: "bg-emerald-600" },
+                  ].map((link) => (
+                    <a key={link.label} href={link.href} target="_blank" rel="noopener" className={`flex h-14 items-center gap-3 rounded-2xl ${link.color} px-6 font-black transition-transform hover:scale-105`}>
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Semeando Socials */}
+              <div className="rounded-[2.5rem] bg-white/5 p-8 backdrop-blur-sm border border-white/10">
+                <div className="mb-8 flex items-center gap-4">
+                   <SafeImage src={assets.semeandoLogo} alt="Semeando" className="h-14 w-14 rounded-xl bg-white p-2" fallback={null} />
+                   <h3 className="font-display text-3xl">Semeando Amor</h3>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { label: "Instagram", icon: "Instagram", href: socialLinks.associacao.instagram, color: "bg-gradient-to-tr from-yellow-400 via-rose-500 to-purple-600" },
+                    { label: "Facebook", icon: "Facebook", href: socialLinks.associacao.facebook, color: "bg-blue-600" },
+                    { label: "WhatsApp", icon: "MessageCircle", href: socialLinks.associacao.whatsapp, color: "bg-emerald-600" },
+                  ].map((link) => (
+                    <a key={link.label} href={link.href} target="_blank" rel="noopener" className={`flex h-14 items-center gap-3 rounded-2xl ${link.color} px-6 font-black transition-transform hover:scale-105`}>
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-          <div className="space-y-1 text-sm font-bold text-stone-700 md:text-right">
-            <a href={hmWhatsAppUrl} className="block text-rose-700 hover:text-rose-800">
-              WhatsApp da HM
-            </a>
-            <p>{hmAddress}</p>
-            <p>{associationAddress}</p>
-            <p className="text-emerald-900">Futebol, bairro e solidariedade jogando juntos.</p>
+        </section>
+
+      </main>
+
+      <footer className="bg-white border-t border-emerald-900/10 py-16">
+        <div className="container grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center gap-4">
+               <SafeImage src={assets.hmLogo} alt="HM" className="h-12 w-12" fallback={null} />
+               <div className="h-8 w-px bg-stone-200" />
+               <SafeImage src={assets.semeandoLogo} alt="Semeando" className="h-12 w-12" fallback={null} />
+            </div>
+            <p className="mt-6 max-w-sm text-stone-500 font-medium">
+              Um movimento comunitário de bairro para transformar a paixão pelo futebol em solidariedade real.
+            </p>
           </div>
+          
+          <div>
+            <h4 className="font-display text-xl text-emerald-950">Links Rápidos</h4>
+            <ul className="mt-6 space-y-4 font-bold text-stone-600">
+              <li><button onClick={() => scrollToSection("top")}>Início</button></li>
+              <li><button onClick={() => scrollToSection("conheca-hm")}>Sobre a HM</button></li>
+              <li><button onClick={() => scrollToSection("conheca-associacao")}>A Causa</button></li>
+              <li><button onClick={() => scrollToSection("participar")}>Participar</button></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-display text-xl text-emerald-950">Contatos</h4>
+            <div className="mt-6 space-y-4 text-sm font-bold text-stone-600">
+              <p className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 shrink-0 text-rose-700" />
+                {hmAddress}
+              </p>
+              <p className="flex items-center gap-3 text-rose-700">
+                 <ShieldCheck className="h-5 w-5" />
+                 Projeto 100% Solidário
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="container mt-16 border-t border-stone-100 pt-8 text-center text-xs font-black uppercase tracking-widest text-stone-400">
+          © 2026 HM Bazar & Associação Semeando Amor • Todos os direitos reservados
         </div>
       </footer>
 
