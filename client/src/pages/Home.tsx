@@ -103,6 +103,7 @@ const assets = {
   stadiumSofi: "/assets/stadium-sofi.jpg",
   stadiumAtt: "/assets/stadium-att.jpg",
   videoAssociacao: "/assets/video-associacao.mp4",
+  semeandoInstagram: "/assets/semeando-instagram.jpg",
 };
 
 const stadiumJourney = [
@@ -142,7 +143,7 @@ const socialLinks = {
     whatsapp: hmWhatsAppUrl,
   },
   associacao: {
-    instagram: "https://instagram.com/semeandoamor",
+    instagram: "https://www.instagram.com/semeandoamorcomatiamonica/",
     whatsapp: "https://wa.me/5511959305099",
   }
 };
@@ -639,9 +640,28 @@ export default function Home() {
                   Seu navegador não suporta vídeos.
                 </video>
               </div>
-              <div className="relative overflow-hidden rounded-[2rem] shadow-xl border-4 border-white">
-                <SafeImage src={assets.community} alt="Atividades Associação" className="h-[250px] w-full object-cover" fallback={<VisualFallback className="h-[250px] w-full" children={null} />} />
-              </div>
+              <a
+                href={socialLinks.associacao.instagram}
+                target="_blank"
+                rel="noopener"
+                className="relative flex items-center gap-5 rounded-[2rem] border-4 border-white bg-white p-5 shadow-xl transition-transform hover:-translate-y-1"
+              >
+                <SafeImage
+                  src={assets.semeandoInstagram}
+                  alt="Instagram da Associação Semeando Amor com a Tia Mônica"
+                  className="h-20 w-20 shrink-0 rounded-2xl object-cover"
+                  fallback={
+                    <VisualFallback className="h-20 w-20 shrink-0 rounded-2xl">
+                      <Heart className="h-8 w-8" />
+                    </VisualFallback>
+                  }
+                />
+                <div>
+                  <p className="font-display text-xl text-rose-950">Siga a Associação</p>
+                  <p className="mt-1 text-sm font-bold text-stone-600">@semeandoamorcomatiamonica</p>
+                  <p className="mt-2 text-xs font-black uppercase tracking-widest text-rose-700">Ver ações no Instagram</p>
+                </div>
+              </a>
             </div>
           </div>
         </section>
