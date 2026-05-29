@@ -112,28 +112,32 @@ const stadiumJourney = [
     city: "Cidade do México", 
     country: "México", 
     image: assets.stadiumAzteca,
-    curiosity: "Primeiro estádio da história a receber três Copas do Mundo."
+    curiosity: "Primeiro estádio da história a receber três Copas do Mundo.",
+    credit: "ProtoplasmaKid / Wikimedia Commons"
   },
   { 
     name: "MetLife Stadium", 
     city: "East Rutherford", 
     country: "Estados Unidos", 
     image: assets.stadiumMetlife,
-    curiosity: "Será o palco da grande final da Copa do Mundo 2026."
+    curiosity: "Será o palco da grande final da Copa do Mundo 2026.",
+    credit: "PicoG / Wikimedia Commons"
   },
   { 
     name: "SoFi Stadium", 
     city: "Inglewood", 
     country: "Estados Unidos", 
     image: assets.stadiumSofi,
-    curiosity: "O estádio mais caro do mundo, com uma tela LED gigante suspensa."
+    curiosity: "O estádio mais caro do mundo, com uma tela LED gigante suspensa.",
+    credit: "Flickr / Wikimedia Commons"
   },
   { 
     name: "AT&T Stadium", 
     city: "Arlington", 
     country: "Estados Unidos", 
     image: assets.stadiumAtt,
-    curiosity: "Possui um dos maiores telões suspensos do planeta."
+    curiosity: "Possui um dos maiores telões suspensos do planeta.",
+    credit: "Drew Tarvin / Wikimedia Commons"
   },
 ];
 
@@ -900,6 +904,9 @@ export default function Home() {
                         <p className="text-xs font-black uppercase tracking-widest text-yellow-500">Você sabia?</p>
                         <p className="mt-2 text-sm leading-relaxed text-emerald-50">
                           {stadium.curiosity}
+                        </p>
+                        <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-white/45">
+                          Foto: {stadium.credit}
                         </p>
                       </div>
                     </div>
