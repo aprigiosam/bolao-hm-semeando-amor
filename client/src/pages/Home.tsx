@@ -728,12 +728,15 @@ export default function Home() {
                 o modo completo e palpitar em todos os jogos.
               </p>
               <Button
-                onClick={() => scrollToSection("palpites")}
+                onClick={() => scrollToSection(participant ? "palpites" : "participar")}
                 className="mt-6 h-12 bg-blue-700 px-6 font-black text-white hover:bg-blue-800"
               >
-                Palpitar nos jogos do Brasil
+                {participant ? "Palpitar nos jogos do Brasil" : "Participar e liberar palpites"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
+              <p className="mt-3 text-sm font-bold text-stone-500">
+                Para salvar palpites, primeiro gere seu cartão e combine a entrega da doação pelo WhatsApp da HM.
+              </p>
             </div>
             <div className="grid gap-4">
               {(brazilMatches.length > 0 ? brazilMatches.slice(0, 3) : matches.slice(0, 3)).map((match) => (
@@ -982,7 +985,8 @@ export default function Home() {
                 <div className="flex items-start gap-3 rounded-2xl bg-yellow-50 p-5 border border-yellow-200">
                    <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-800" />
                    <p className="text-sm font-bold text-stone-700">
-                      Sua participação será confirmada pela equipe da HM após o recebimento da doação. É 100% transparente e comunitário.
+                      Ao criar seu cartão você já pode preencher palpites. Depois envie uma mensagem para a HM pelo WhatsApp
+                      e combine a entrega da doação para sua pontuação entrar no ranking.
                    </p>
                 </div>
 
@@ -1086,7 +1090,7 @@ export default function Home() {
               <p className="mt-8 text-lg font-bold text-stone-500">
                 {participant
                   ? `${predictedCount}/${matches.length} jogos palpitados. Boa sorte!`
-                  : "Cadastre-se ou acesse seu cartão para salvar seus palpites solidários."}
+                  : "Para palpitar, crie seu cartão do bolão ou acesse um cartão já cadastrado."}
               </p>
             </div>
             <Button
@@ -1097,6 +1101,35 @@ export default function Home() {
               Salvar meus Palpites
             </Button>
           </div>
+
+          {!participant && (
+            <div className="mb-8 rounded-[2rem] border-2 border-yellow-300 bg-yellow-50 p-6 shadow-xl md:flex md:items-center md:justify-between md:gap-6">
+              <div>
+                <p className="font-black uppercase tracking-widest text-rose-700">Antes de palpitar</p>
+                <h3 className="mt-2 font-display text-2xl text-emerald-950">Faça sua participação e fale com a HM no WhatsApp.</h3>
+                <p className="mt-2 font-bold text-stone-700">
+                  O cartão libera o preenchimento dos placares. A doação será confirmada pela organização para valer no ranking.
+                </p>
+              </div>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row md:mt-0">
+                <Button
+                  onClick={() => scrollToSection("participar")}
+                  className="h-12 rounded-2xl bg-blue-700 px-6 font-black text-white hover:bg-blue-800"
+                >
+                  Criar meu cartão
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-12 rounded-2xl border-2 border-emerald-800 px-6 font-black text-emerald-950 hover:bg-emerald-50"
+                >
+                  <a href={hmWhatsAppUrl} target="_blank" rel="noopener">
+                    Falar com a HM
+                  </a>
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="mb-8 overflow-hidden rounded-[2rem] bg-white p-2 shadow-xl border border-stone-100">
             <div className="grid grid-cols-2 gap-2">
