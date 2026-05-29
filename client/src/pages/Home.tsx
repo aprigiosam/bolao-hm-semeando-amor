@@ -836,8 +836,33 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mt-16 overflow-hidden rounded-[3rem] shadow-2xl border-8 border-white">
-              <SafeImage src={assets.community} alt="Nossa Comunidade" className="h-[400px] w-full object-cover" fallback={<VisualFallback children={null} className="h-[400px]" />} />
+            <div className="mt-16 grid gap-6 rounded-[3rem] bg-emerald-950 p-8 text-white shadow-2xl md:grid-cols-[auto_1fr_auto] md:items-center md:p-10">
+              <SafeImage
+                src={assets.semeandoInstagram}
+                alt="Associação Semeando Amor com a Tia Mônica"
+                className="h-24 w-24 rounded-3xl border-4 border-white/20 object-cover"
+                fallback={
+                  <VisualFallback className="h-24 w-24 rounded-3xl">
+                    <Heart className="h-9 w-9" />
+                  </VisualFallback>
+                }
+              />
+              <div>
+                <p className="font-black uppercase tracking-widest text-yellow-300">Ações reais da Associação</p>
+                <h3 className="mt-2 font-display text-3xl">Acompanhe o impacto no Instagram</h3>
+                <p className="mt-3 max-w-2xl font-medium text-emerald-100">
+                  Em vez de uma imagem genérica, este espaço leva para o perfil oficial da Semeando Amor com a Tia Mônica,
+                  onde a comunidade pode ver as ações, campanhas e bastidores.
+                </p>
+              </div>
+              <a
+                href={socialLinks.associacao.instagram}
+                target="_blank"
+                rel="noopener"
+                className="inline-flex h-14 items-center justify-center rounded-2xl bg-yellow-300 px-6 font-black text-emerald-950 transition-transform hover:-translate-y-1 hover:bg-yellow-200"
+              >
+                Ver Instagram
+              </a>
             </div>
           </div>
         </section>
