@@ -483,6 +483,60 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="bg-rose-700 py-6 text-white shadow-inner">
+          <div className="container flex flex-col items-center gap-4 text-center md:flex-row md:justify-center md:text-left">
+            <Heart className="h-10 w-10 animate-pulse text-yellow-300" />
+            <div>
+              <p className="font-display text-xl tracking-tight sm:text-2xl">❤️ MAIS QUE UM BOLÃO</p>
+              <p className="text-sm font-bold text-rose-100 sm:text-base">
+                Projeto comunitário para apoiar a Associação Semeando Amor e fortalecer o comércio local.
+              </p>
+            </div>
+            <div className="rounded-lg bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-white backdrop-blur-sm">
+              Sem apostas em dinheiro • 100% Solidário
+            </div>
+          </div>
+        </section>
+
+        <section id="porque-existimos" className="bg-white py-16">
+          <div className="container grid gap-12 lg:grid-cols-2 lg:items-center">
+            <div className="relative">
+              <div className="absolute -left-4 -top-4 h-24 w-24 rounded-full bg-yellow-200/50 blur-2xl" />
+              <p className="relative font-black uppercase tracking-widest text-rose-700">O Propósito</p>
+              <h2 className="relative mt-3 font-display text-4xl leading-tight text-emerald-950 sm:text-5xl">
+                Por que este bolão existe?
+              </h2>
+              <div className="mt-8 space-y-6 text-lg font-medium leading-relaxed text-stone-700">
+                <p>
+                  A Copa do Mundo une pessoas. Nós acreditamos que ela também pode unir a nossa comunidade.
+                </p>
+                <p>
+                  O <span className="font-black text-emerald-900">Bolão Solidário HM + Semeando Amor</span> nasceu para transformar a paixão pelo futebol em apoio real para quem precisa.
+                </p>
+                <p>
+                  Cada participação fortalece as ações sociais da <span className="text-rose-700 underline decoration-rose-300 underline-offset-4">Associação Semeando Amor</span> e aproxima a vizinhança da HM Bazar e Conveniência.
+                </p>
+                <div className="rounded-2xl bg-emerald-50 p-6 border-l-4 border-emerald-800">
+                  <p className="text-emerald-950">
+                    Aqui você não faz apostas financeiras. Você participa, torce, ajuda e faz parte de algo maior. 
+                    <span className="block mt-2 font-black">Transformamos palpites em solidariedade.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="grid gap-4">
+              <div className="overflow-hidden rounded-[2.5rem] shadow-2xl">
+                <SafeImage
+                  src={assets.community}
+                  alt="Comunidade apoiada"
+                  className="h-[400px] w-full object-cover"
+                  fallback={<VisualFallback className="h-[400px] w-full"><Users className="h-16 w-16 text-yellow-200" /></VisualFallback>}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
         {message && (
           <div className="container -mt-10 relative z-10">
             <div className="rounded-2xl border border-yellow-300 bg-yellow-50 p-4 font-bold text-emerald-950 shadow-lg">
@@ -501,17 +555,17 @@ export default function Home() {
               {
                 icon: Flag,
                 title: "Torça pelo Brasil",
-                text: "Comece pelos jogos da seleção e sinta o clima da Copa antes de preencher o bolão completo.",
+                text: "Comece pelos jogos da seleção e sinta o clima da Copa ajudando sua comunidade.",
               },
               {
                 icon: Trophy,
-                title: "Palpite",
-                text: "Marque os placares, dispute o ranking e concorra aos prêmios preparados pela campanha.",
+                title: "Dê seu palpite",
+                text: "Marque os placares e dispute o ranking de solidariedade com seus vizinhos.",
               },
               {
                 icon: HandHeart,
-                title: "Ajude uma causa",
-                text: "Sua doação fortalece as ações da Associação Semeando Amor no bairro.",
+                title: "Fortaleça a causa",
+                text: "Sua doação (alimentos, roupas ou brinquedos) vai direto para a Semeando Amor.",
               },
             ].map((step, index) => {
               const Icon = step.icon;
@@ -903,7 +957,7 @@ export default function Home() {
               form="predictions-form"
               className="h-12 bg-rose-700 px-7 font-black text-white hover:bg-rose-800"
             >
-              Salvar palpites
+              Salvar palpites solidários
             </Button>
           </div>
 
@@ -1001,8 +1055,8 @@ export default function Home() {
                         {match.venue}, {match.city}
                       </span>
                     </div>
-                    <div className="grid grid-cols-[1fr_76px] items-center gap-3">
-                      <span className="min-w-0 rounded-xl bg-emerald-50 px-4 py-3 font-black text-emerald-950">
+                    <div className="grid grid-cols-[1fr_80px_16px_80px_1fr] items-center gap-1 sm:grid-cols-[1fr_76px] sm:gap-3">
+                      <span className="min-w-0 rounded-xl bg-emerald-50 px-2 py-3 text-center text-sm font-black text-emerald-950 sm:px-4 sm:text-base">
                         {match.home_team}
                       </span>
                       <input
@@ -1020,9 +1074,7 @@ export default function Home() {
                         }
                         className="h-14 rounded-xl border border-emerald-900/20 text-center text-2xl font-black text-rose-700 outline-none focus:border-rose-700 disabled:bg-stone-100 disabled:text-stone-400"
                       />
-                      <span className="min-w-0 rounded-xl bg-emerald-50 px-4 py-3 font-black text-emerald-950">
-                        {match.away_team}
-                      </span>
+                      <span className="text-center font-bold text-stone-400">x</span>
                       <input
                         aria-label={`Placar ${match.away_team}`}
                         disabled={!participant}
@@ -1038,6 +1090,9 @@ export default function Home() {
                         }
                         className="h-14 rounded-xl border border-emerald-900/20 text-center text-2xl font-black text-rose-700 outline-none focus:border-rose-700 disabled:bg-stone-100 disabled:text-stone-400"
                       />
+                      <span className="min-w-0 rounded-xl bg-emerald-50 px-2 py-3 text-center text-sm font-black text-emerald-950 sm:px-4 sm:text-base">
+                        {match.away_team}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1146,6 +1201,21 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {participant && (
+        <div className="fixed bottom-6 right-6 z-50 lg:hidden">
+          <Button
+            onClick={(e) => {
+              const form = document.getElementById("predictions-form") as HTMLFormElement;
+              form?.requestSubmit();
+            }}
+            disabled={saving}
+            className="h-16 w-16 rounded-full bg-rose-700 p-0 shadow-2xl hover:bg-rose-800"
+          >
+            {saving ? <Loader2 className="h-6 w-6 animate-spin" /> : <CheckCircle2 className="h-8 w-8 text-white" />}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
