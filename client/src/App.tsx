@@ -7,11 +7,20 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Admin from "./pages/Admin";
 import Home from "./pages/Home";
 
+const HomePage = () => <Home />;
+const AboutPage = () => <Home view="sobre" />;
+const ParticipatePage = () => <Home view="participar" />;
+const PredictionsPage = () => <Home view="palpites" />;
+const RankingPage = () => <Home view="ranking" />;
 
 function Router() {
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={"/"} component={HomePage} />
+      <Route path={"/sobre"} component={AboutPage} />
+      <Route path={"/participar"} component={ParticipatePage} />
+      <Route path={"/palpites"} component={PredictionsPage} />
+      <Route path={"/ranking"} component={RankingPage} />
       <Route path={"/admin"} component={Admin} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}

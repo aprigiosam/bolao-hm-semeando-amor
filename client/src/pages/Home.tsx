@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   ArrowRight,
+  ArrowUp,
   CalendarDays,
   CheckCircle2,
   ChevronDown,
@@ -181,6 +182,10 @@ function predictionKey(matchId: number, side: "home" | "away") {
   return `${matchId}-${side}`;
 }
 
+function navigateTo(path: string) {
+  window.location.assign(path);
+}
+
 function scrollToSection(id: string) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -213,11 +218,27 @@ function VisualFallback({ children, className = "" }: { children: ReactNode; cla
   );
 }
 
-export default function Home() {
+type HomeView = "home" | "sobre" | "participar" | "palpites" | "ranking";
+
+export default function Home({ view = "home" }: { view?: HomeView }) {
   const [matches, setMatches] = useState<Match[]>([]);
   const [ranking, setRanking] = useState<RankingRow[]>([]);
-  const [participant, setParticipant] = useState<Participant | null>(null);
-  const [predictions, setPredictions] = useState<Record<string, string>>({});
+  const [participant, setParticipant] = useState<Participant | null>(() => {
+    try {
+      const storedParticipant = window.localStorage.getItem("bolaoParticipant");
+      return storedParticipant ? JSON.parse(storedParticipant) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [predictions, setPredictions] = useState<Record<string, string>>(() => {
+    try {
+      const storedPredictions = window.localStorage.getItem("bolaoPredictions");
+      return storedPredictions ? JSON.parse(storedPredictions) : {};
+    } catch {
+      return {};
+    }
+  });
   const [accessCode, setAccessCode] = useState("");
   const [accessWhatsApp, setAccessWhatsApp] = useState("");
   const [phaseFilter, setPhaseFilter] = useState("Todas");
@@ -264,6 +285,26 @@ export default function Home() {
     [matches, predictions]
   );
 
+  const visiblePredictedCount = useMemo(
+    () =>
+      visiblePredictionMatches.filter(
+        (match) =>
+          predictions[predictionKey(match.id, "home")] !== undefined &&
+          predictions[predictionKey(match.id, "home")] !== "" &&
+          predictions[predictionKey(match.id, "away")] !== undefined &&
+          predictions[predictionKey(match.id, "away")] !== ""
+      ).length,
+    [predictions, visiblePredictionMatches]
+  );
+
+  const predictionProgress = matches.length > 0 ? Math.round((predictedCount / matches.length) * 100) : 0;
+
+  function isMatchPredicted(match: Match) {
+    const home = predictions[predictionKey(match.id, "home")];
+    const away = predictions[predictionKey(match.id, "away")];
+    return home !== undefined && home !== "" && away !== undefined && away !== "";
+  }
+
   async function loadPublicData() {
     const [matchesResponse, rankingResponse] = await Promise.all([fetch("/api/matches"), fetch("/api/ranking")]);
     const matchesPayload = await matchesResponse.json();
@@ -277,6 +318,20 @@ export default function Home() {
       .catch(() => setMessage("Não foi possível carregar os dados do bolão agora."))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (participant) {
+      window.localStorage.setItem("bolaoParticipant", JSON.stringify(participant));
+      setAccessCode(participant.code);
+      setAccessWhatsApp(participant.whatsapp);
+    }
+  }, [participant]);
+
+  useEffect(() => {
+    if (participant) {
+      window.localStorage.setItem("bolaoPredictions", JSON.stringify(predictions));
+    }
+  }, [participant, predictions]);
 
   async function createParticipant(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -307,10 +362,8 @@ export default function Home() {
 
       const payload = await response.json();
       setParticipant(payload.participant);
-      setAccessCode(payload.participant.code);
-      setAccessWhatsApp(payload.participant.whatsapp);
-      setMessage("Sua participação foi criada. Agora salve seus palpites e combine a entrega da doação com a HM.");
-      scrollToSection("participante");
+      setMessage("Participação criada. Agora fale com a HM no WhatsApp para combinar a doação e preencha seus palpites.");
+      setTimeout(() => scrollToSection("top"), 50);
     } catch {
       setMessage("Não foi possível criar sua participação. Confira os dados e tente novamente.");
     } finally {
@@ -338,10 +391,12 @@ export default function Home() {
         return acc;
       }, {});
 
+      window.localStorage.setItem("bolaoParticipant", JSON.stringify(payload.participant));
+      window.localStorage.setItem("bolaoPredictions", JSON.stringify(nextPredictions));
       setParticipant(payload.participant);
       setPredictions(nextPredictions);
       setMessage("Participação encontrada. Você pode continuar seus palpites.");
-      scrollToSection("participante");
+      navigateTo("/palpites");
     } catch {
       setMessage("Não encontrei essa combinação de código e WhatsApp.");
     } finally {
@@ -377,7 +432,8 @@ export default function Home() {
       });
 
       if (!response.ok) throw new Error("prediction save failed");
-      setMessage("Palpites salvos. Sua pontuação aparece no ranking após a confirmação da doação.");
+      window.localStorage.setItem("bolaoPredictions", JSON.stringify(predictions));
+      setMessage("Palpites salvos. Seus pontos entram no ranking após a confirmação da doação.");
     } catch {
       setMessage("Não foi possível salvar os palpites agora.");
     } finally {
@@ -393,12 +449,18 @@ export default function Home() {
 
   function openWhatsApp() {
     if (!participant) return;
-    const messageText = `Olá! Quero confirmar minha participação no Bolão Solidário HM + Semeando Amor.%0A%0ANome: ${participant.full_name}%0AWhatsApp: ${participant.whatsapp}%0ACódigo: ${participant.code}%0ADoação: ${participant.donation_type}%0AEntrega: ${participant.delivery_point}`;
+    const messageText = `Olá! Quero confirmar minha doação para participar do Bolão Solidário HM + Semeando Amor.%0A%0ANome: ${participant.full_name}%0AWhatsApp: ${participant.whatsapp}%0ACódigo de participação: ${participant.code}%0ADoação: ${participant.donation_type}%0AEntrega: ${participant.delivery_point}`;
     window.open(`${hmWhatsAppUrl}?text=${messageText}`, "_blank", "noopener,noreferrer");
   }
 
   const topThree = ranking.slice(0, 3);
   const remainingRanking = ranking.slice(3);
+  const showLanding = view === "home";
+  const showAbout = view === "sobre";
+  const showParticipation = view === "participar";
+  const showPredictions = view === "palpites";
+  const showRanking = view === "ranking";
+  const showSocial = view === "sobre";
 
   return (
     <div className="min-h-screen bg-[#fffaf0] text-stone-950">
@@ -432,13 +494,16 @@ export default function Home() {
           </a>
 
           <nav className="hidden items-center gap-6 text-sm font-black text-emerald-950 lg:flex">
-            <button onClick={() => scrollToSection("como-funciona")} className="hover:text-rose-700">
-              Como funciona
+            <button onClick={() => navigateTo("/sobre")} className="hover:text-rose-700">
+              Sobre
             </button>
-            <button onClick={() => scrollToSection("participar")} className="hover:text-rose-700">
+            <button onClick={() => navigateTo("/participar")} className="hover:text-rose-700">
               Participar
             </button>
-            <button onClick={() => scrollToSection("ranking")} className="hover:text-rose-700">
+            <button onClick={() => navigateTo("/palpites")} className="hover:text-rose-700">
+              Palpites
+            </button>
+            <button onClick={() => navigateTo("/ranking")} className="hover:text-rose-700">
               Ranking
             </button>
             <a href="/admin" className="hover:text-rose-700">
@@ -447,7 +512,7 @@ export default function Home() {
           </nav>
 
           <Button
-            onClick={() => scrollToSection("participar")}
+            onClick={() => navigateTo("/participar")}
             className="bg-rose-700 px-4 font-black text-white hover:bg-rose-800"
           >
             Participar
@@ -456,6 +521,8 @@ export default function Home() {
       </header>
 
       <main id="top">
+        {showLanding && (
+          <>
         <section
           className="relative isolate overflow-hidden bg-[#06351f] text-white"
           style={{
@@ -475,23 +542,23 @@ export default function Home() {
               </div>
               
               <h1 className="max-w-4xl font-display text-5xl leading-[0.95] text-white sm:text-7xl lg:text-8xl">
-                TORCIDA QUE <span className="text-yellow-300">TRANSFORMA</span>
+                TORÇA PELO BRASIL. <span className="text-yellow-300">AJUDE O BAIRRO.</span>
               </h1>
               
               <p className="max-w-xl text-xl font-bold leading-relaxed text-emerald-50 sm:text-2xl">
-                O Bolão Solidário da HM une o bairro pelo Brasil e pela Associação Semeando Amor.
+                Faça seus palpites da Copa 2026, concorra a prêmios e ajude a Associação Semeando Amor com a Tia Mônica.
               </p>
 
               <div className="flex flex-col gap-4 sm:flex-row">
                 <Button
-                  onClick={() => scrollToSection("participar")}
+                  onClick={() => navigateTo("/participar")}
                   className="group h-14 bg-yellow-300 px-8 text-lg font-black text-emerald-950 shadow-[0_20px_50px_rgba(250,204,21,0.3)] hover:bg-yellow-200"
                 >
                   Quero participar agora
                   <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
                 </Button>
                 <Button
-                  onClick={() => scrollToSection("ranking")}
+                  onClick={() => navigateTo("/ranking")}
                   variant="outline"
                   className="h-14 border-white/40 bg-white/5 px-8 text-lg font-black text-white backdrop-blur-sm hover:bg-white hover:text-emerald-950"
                 >
@@ -526,9 +593,9 @@ export default function Home() {
                       <SafeImage src={assets.semeandoLogo} alt="Semeando" className="h-16 w-16 rounded-xl bg-white p-2 shadow-lg" fallback={<div className="h-16 w-16 rounded-xl bg-rose-800" />} />
                    </div>
                    <div className="pt-6">
-                      <p className="font-display text-2xl text-white">Juntos pelo Bairro</p>
+                      <p className="font-display text-2xl text-white">Torcida solidária do bairro</p>
                       <p className="mt-2 text-emerald-50/80">
-                        Cada palpite no site é uma doação confirmada na HM que ajuda diretamente a Associação Semeando Amor.
+                        Você participa, combina a doação com a HM e acompanha seus pontos depois da confirmação.
                       </p>
                    </div>
                 </div>
@@ -541,9 +608,9 @@ export default function Home() {
           <div className="container flex flex-col items-center gap-4 text-center md:flex-row md:justify-center md:text-left">
             <Heart className="h-10 w-10 animate-pulse text-yellow-300" />
             <div>
-              <p className="font-display text-xl tracking-tight sm:text-2xl">❤️ MAIS QUE UM BOLÃO</p>
+              <p className="font-display text-xl tracking-tight sm:text-2xl">❤️ A COPA TAMBÉM PODE FAZER O BEM</p>
               <p className="text-sm font-bold text-rose-100 sm:text-base">
-                Projeto comunitário para apoiar a Associação Semeando Amor e fortalecer o comércio local.
+                Sua doação ajuda ações sociais da Associação Semeando Amor e fortalece a nossa comunidade.
               </p>
             </div>
             <div className="rounded-lg bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-white backdrop-blur-sm">
@@ -551,7 +618,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {showAbout && (
+          <>
         <section id="conheca-hm" className="bg-white py-20">
           <div className="container grid gap-12 lg:grid-cols-2 lg:items-center">
             <div className="order-2 lg:order-1">
@@ -669,6 +740,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
         {message && (
           <div className="container -mt-10 relative z-10">
@@ -678,27 +751,29 @@ export default function Home() {
           </div>
         )}
 
+        {showLanding && (
+          <>
         <section id="como-funciona" className="container py-12">
           <div className="max-w-2xl">
             <p className="font-black uppercase tracking-wide text-rose-700">Como funciona</p>
-            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Torça, palpite e entre na corrente.</h2>
+            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Participe em três passos simples.</h2>
           </div>
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {[
               {
                 icon: Flag,
-                title: "Torça pelo Brasil",
-                text: "Comece pelos jogos da seleção e sinta o clima da Copa ajudando sua comunidade.",
+                title: "Doe",
+                text: "Escolha sua doação e combine a entrega com a HM pelo WhatsApp.",
               },
               {
                 icon: Trophy,
-                title: "Dê seu palpite",
-                text: "Marque os placares e dispute o ranking de solidariedade com seus vizinhos.",
+                title: "Palpite",
+                text: "Preencha os placares dos jogos do Brasil ou da Copa completa.",
               },
               {
                 icon: HandHeart,
-                title: "Fortaleça a causa",
-                text: "Sua doação (alimentos, roupas ou brinquedos) vai direto para a Semeando Amor.",
+                title: "Acompanhe",
+                text: "Depois da confirmação da doação, seus pontos entram no ranking.",
               },
             ].map((step, index) => {
               const Icon = step.icon;
@@ -722,20 +797,19 @@ export default function Home() {
           <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
               <p className="font-black uppercase tracking-wide text-blue-700">🇧🇷 Jogos do Brasil</p>
-              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Comece pelo que todo mundo quer ver.</h2>
+              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Primeiro, o Brasil. Depois, a Copa inteira.</h2>
               <p className="mt-4 text-lg font-medium leading-8 text-stone-700">
-                O modo simples deixa os jogos da seleção em primeiro plano. Quem quiser viver a Copa inteira pode abrir
-                o modo completo e palpitar em todos os jogos.
+                Comece pelos jogos da Seleção. É o jeito mais rápido de participar, torcer e entrar no clima da Copa.
               </p>
               <Button
                 onClick={() => scrollToSection(participant ? "palpites" : "participar")}
                 className="mt-6 h-12 bg-blue-700 px-6 font-black text-white hover:bg-blue-800"
               >
-                {participant ? "Palpitar nos jogos do Brasil" : "Participar e liberar palpites"}
+                {participant ? "Palpitar nos jogos do Brasil" : "Fazer minha participação"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
               <p className="mt-3 text-sm font-bold text-stone-500">
-                Para salvar palpites, primeiro gere seu cartão e combine a entrega da doação pelo WhatsApp da HM.
+                Depois de participar, você já pode preencher seus palpites. A pontuação entra no ranking quando a doação for confirmada.
               </p>
             </div>
             <div className="grid gap-4">
@@ -766,10 +840,10 @@ export default function Home() {
             <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="font-black uppercase tracking-wide text-blue-700">🏆 Premiação</p>
-                <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Tem disputa, ranking e prêmio.</h2>
+                <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Quem torce também concorre.</h2>
               </div>
               <p className="max-w-md text-sm font-bold text-stone-600">
-                Os valores serão definidos pela organização. A estrutura já está pronta para anunciar os ganhadores.
+                Os prêmios serão anunciados pela organização. O ranking já está preparado para 1º, 2º e 3º lugar.
               </p>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
@@ -792,18 +866,17 @@ export default function Home() {
         <section className="container grid gap-6 py-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
           <div className="rounded-[2rem] bg-blue-700 p-6 text-white shadow-2xl sm:p-8">
             <Ticket className="h-11 w-11 text-yellow-300" />
-            <h2 className="mt-5 font-display text-3xl sm:text-4xl">Sorteio Solidário</h2>
+            <h2 className="mt-5 font-display text-3xl sm:text-4xl">Mais solidariedade, mais chances no sorteio</h2>
             <p className="mt-4 text-lg font-medium leading-8 text-blue-50">
-              Além do ranking, cada doação pode gerar um número da sorte. Quem ajuda mais recebe mais chances no sorteio,
-              sem comprar pontos e sem alterar a disputa dos palpites.
+              Cada doação pode gerar um número da sorte. Isso não altera o ranking: os pontos continuam vindo apenas dos palpites.
             </p>
           </div>
           <div className="grid gap-3">
-            {[
-              ["1 doação", "recebe número da sorte"],
-              ["Mais ajuda", "mais números para concorrer"],
-              ["Ranking preservado", "pontuação segue só pelos palpites"],
-            ].map(([title, text]) => (
+              {[
+                ["1 doação", "recebe número da sorte"],
+                ["Mais ajuda", "mais números para concorrer"],
+                ["Ranking preservado", "pontos só pelos palpites"],
+              ].map(([title, text]) => (
               <div key={title} className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm">
                 <Gift className="h-7 w-7 shrink-0 text-rose-700" />
                 <div>
@@ -814,7 +887,11 @@ export default function Home() {
             ))}
           </div>
         </section>
+          </>
+        )}
 
+        {showAbout && (
+          <>
         <section id="nossa-comunidade" className="bg-emerald-50 py-24">
           <div className="container">
             <div className="flex flex-col items-center text-center mb-16">
@@ -919,94 +996,165 @@ export default function Home() {
             </div>
           </div>
         </section>
+          </>
+        )}
 
+        {showParticipation && (
         <section id="participar" className="bg-[#fffaf0] py-24">
           <div className="container grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
             <Card className="border-0 bg-white p-6 shadow-[0_30px_70px_rgba(20,83,45,0.15)] sm:p-10">
-              <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#14532d,#16a34a_52%,#b91c1c)] p-8 text-white shadow-xl">
-                <p className="font-black uppercase tracking-widest text-yellow-300">Adesão Solidária</p>
-                <h2 className="mt-4 font-display text-4xl leading-tight">Entre no bolão fazendo o bem.</h2>
-                <p className="mt-4 text-emerald-50/90">
-                  Preencha seus dados abaixo para gerar seu código de participação. Depois, basta entregar sua doação na HM para liberar seus palpites no ranking.
-                </p>
-              </div>
+              {participant ? (
+                <div className="space-y-7">
+                  <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#14532d,#16a34a_52%,#b91c1c)] p-8 text-white shadow-xl">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-300 text-emerald-950">
+                      <CheckCircle2 className="h-8 w-8" />
+                    </div>
+                    <p className="mt-6 font-black uppercase tracking-widest text-yellow-300">Participação criada</p>
+                    <h2 className="mt-3 font-display text-4xl leading-tight">Agora falta confirmar a doação.</h2>
+                    <p className="mt-4 text-lg font-bold text-emerald-50/90">
+                      Seu código está pronto. Envie uma mensagem para a HM, combine a entrega e depois preencha seus palpites.
+                    </p>
+                  </div>
 
-              <form onSubmit={createParticipant} className="mt-10 space-y-6">
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Seu Nome</span>
-                    <input
-                      required
-                      name="fullName"
-                      placeholder="Como quer aparecer no ranking"
-                      className="mt-2 h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white focus:ring-4 focus:ring-emerald-700/5"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Seu WhatsApp</span>
-                    <input
-                      required
-                      name="whatsapp"
-                      inputMode="tel"
-                      placeholder="(11) 99999-9999"
-                      className="mt-2 h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white focus:ring-4 focus:ring-emerald-700/5"
-                    />
-                  </label>
-                </div>
-                
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Tipo de Doação</span>
-                    <select
-                      required
-                      name="donationType"
-                      className="mt-2 h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white"
+                  <div className="rounded-[2rem] border-2 border-emerald-100 bg-emerald-50 p-6">
+                    <p className="text-sm font-black uppercase tracking-widest text-rose-700">Seu código</p>
+                    <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="rounded-2xl bg-white px-5 py-4 font-display text-3xl text-emerald-950 shadow-sm">
+                        {participant.code}
+                      </p>
+                      <Button onClick={() => copyCode(participant.code)} variant="outline" className="h-12 rounded-2xl border-2 font-black">
+                        {copied ? "Copiado!" : "Copiar"}
+                      </Button>
+                    </div>
+                    <p className="mt-4 text-sm font-bold text-stone-700">
+                      Nome: {participant.full_name} · Status:{" "}
+                      {participant.donation_confirmed ? "doação confirmada" : "aguardando confirmação da doação"}
+                    </p>
+                  </div>
+
+                  <div className="grid gap-3">
+                    <Button onClick={openWhatsApp} className="h-16 rounded-2xl bg-emerald-800 text-lg font-black text-white hover:bg-emerald-900">
+                      Confirmar doação no WhatsApp
+                    </Button>
+                    <Button
+                      onClick={() => navigateTo("/palpites")}
+                      variant="outline"
+                      className="h-14 rounded-2xl border-2 border-blue-700 font-black text-blue-800 hover:bg-blue-50"
                     >
-                      {donationTypes.map((type) => (
-                        <option key={type.id} value={type.id}>
-                          {type.label} - {type.voucherDiscount}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Onde vai entregar?</span>
-                    <select
-                      required
-                      name="deliveryPoint"
-                      className="mt-2 h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white"
-                    >
-                      <option value={hmAddress}>{hmAddress}</option>
-                      <option value={associationAddress}>{associationAddress}</option>
-                    </select>
-                  </label>
+                      Ir para os palpites
+                    </Button>
+                  </div>
                 </div>
+              ) : (
+                <>
+                  <div className="rounded-[2.5rem] bg-[linear-gradient(135deg,#14532d,#16a34a_52%,#b91c1c)] p-8 text-white shadow-xl">
+                    <p className="font-black uppercase tracking-widest text-yellow-300">Nova participação</p>
+                    <h2 className="mt-4 font-display text-4xl leading-tight">Entre na torcida solidária.</h2>
+                    <p className="mt-4 text-emerald-50/90">
+                      Preencha seus dados, escolha sua doação e receba seu código. Depois fale com a HM no WhatsApp para combinar a entrega.
+                    </p>
+                  </div>
 
-                <div className="flex items-start gap-3 rounded-2xl bg-yellow-50 p-5 border border-yellow-200">
-                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-800" />
-                   <p className="text-sm font-bold text-stone-700">
-                      Ao criar seu cartão você já pode preencher palpites. Depois envie uma mensagem para a HM pelo WhatsApp
-                      e combine a entrega da doação para sua pontuação entrar no ranking.
-                   </p>
-                </div>
+                  <form onSubmit={createParticipant} className="mt-10 space-y-6">
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <label className="block">
+                        <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Seu nome</span>
+                        <input
+                          required
+                          name="fullName"
+                          placeholder="Como quer aparecer no ranking"
+                          className="mt-2 h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white focus:ring-4 focus:ring-emerald-700/5"
+                        />
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Seu WhatsApp</span>
+                        <input
+                          required
+                          name="whatsapp"
+                          inputMode="tel"
+                          placeholder="(11) 99999-9999"
+                          className="mt-2 h-14 w-full rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white focus:ring-4 focus:ring-emerald-700/5"
+                        />
+                      </label>
+                    </div>
 
-                <Button disabled={saving} className="h-16 w-full rounded-2xl bg-rose-700 text-xl font-black text-white shadow-2xl hover:bg-rose-800">
-                  {saving ? <Loader2 className="h-6 w-6 animate-spin" /> : <Heart className="mr-2 h-6 w-6" />}
-                  Confirmar minha participação
-                </Button>
-              </form>
+                    <div className="grid gap-6 sm:grid-cols-2">
+                      <label className="block">
+                        <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Tipo de doação</span>
+                        <select
+                          required
+                          name="donationType"
+                          className="mt-2 h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white"
+                        >
+                          {donationTypes.map((type) => (
+                            <option key={type.id} value={type.id}>
+                              {type.label} - {type.voucherDiscount}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="block">
+                        <span className="text-sm font-black uppercase tracking-widest text-emerald-950">Onde vai entregar?</span>
+                        <select
+                          required
+                          name="deliveryPoint"
+                          className="mt-2 h-14 w-full appearance-none rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none transition-all focus:border-emerald-700 focus:bg-white"
+                        >
+                          <option value={hmAddress}>{hmAddress}</option>
+                          <option value={associationAddress}>{associationAddress}</option>
+                        </select>
+                      </label>
+                    </div>
+
+                    <div className="flex items-start gap-3 rounded-2xl border border-yellow-200 bg-yellow-50 p-5">
+                       <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-800" />
+                       <p className="text-sm font-bold text-stone-700">
+                          Você pode preencher seus palpites após criar a participação. Para pontuar no ranking, confirme a doação com a HM pelo WhatsApp.
+                       </p>
+                    </div>
+
+                    <Button disabled={saving} className="h-16 w-full rounded-2xl bg-rose-700 text-xl font-black text-white shadow-2xl hover:bg-rose-800">
+                      {saving ? <Loader2 className="h-6 w-6 animate-spin" /> : <Heart className="mr-2 h-6 w-6" />}
+                      Criar minha participação
+                    </Button>
+                  </form>
+                </>
+              )}
             </Card>
 
             <div className="space-y-8">
+              <Card className="border-0 bg-emerald-950 p-8 text-white shadow-xl sm:p-10">
+                <p className="font-black uppercase tracking-widest text-yellow-300">Depois de participar</p>
+                <h2 className="mt-3 font-display text-3xl">O caminho é simples.</h2>
+                <div className="mt-6 grid gap-3">
+                  {[
+                    ["1", "Guarde seu código", "Ele serve para voltar e continuar seus palpites."],
+                    ["2", "Chame a HM no WhatsApp", "Combine a entrega da doação escolhida."],
+                    ["3", "Preencha seus placares", "Comece pelos jogos do Brasil ou faça a Copa completa."],
+                    ["4", "Acompanhe o ranking", "A pontuação vale após confirmação da doação."],
+                  ].map(([step, title, text]) => (
+                    <div key={step} className="flex gap-4 rounded-2xl bg-white/8 p-4">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-yellow-300 font-black text-emerald-950">
+                        {step}
+                      </span>
+                      <div>
+                        <p className="font-black text-white">{title}</p>
+                        <p className="mt-1 text-sm font-medium text-emerald-100/80">{text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
               <Card className="border-0 bg-white p-8 shadow-xl sm:p-10">
                 <div className="flex items-start gap-5">
                   <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-800 text-white shadow-lg shadow-emerald-900/20">
                     <CheckCircle2 className="h-8 w-8" />
                   </div>
                   <div>
-                    <h2 className="font-display text-3xl text-emerald-950">Já participo!</h2>
+                    <h2 className="font-display text-3xl text-emerald-950">Continuar participação</h2>
                     <p className="mt-2 font-medium text-stone-600">
-                      Acesse seu cartão do bolão para continuar seus palpites ou conferir seu código.
+                      Informe seu código de participação e WhatsApp para continuar seus palpites.
                     </p>
                   </div>
                 </div>
@@ -1014,7 +1162,7 @@ export default function Home() {
                   <input
                     value={accessCode}
                     onChange={(event) => setAccessCode(event.target.value)}
-                    placeholder="Seu Código (Ex: BOLAO-2026-0000)"
+                    placeholder="Código de participação"
                     className="h-14 flex-1 rounded-2xl border border-emerald-900/10 bg-emerald-50/30 px-5 font-bold outline-none focus:border-emerald-700 focus:bg-white"
                   />
                   <input
@@ -1029,94 +1177,102 @@ export default function Home() {
                 </form>
               </Card>
 
-              {participant && (
-                <div
-                  id="participante"
-                  className="relative overflow-hidden rounded-[2.5rem] border-2 border-emerald-200 bg-white p-8 shadow-2xl transition-all sm:p-10"
-                >
-                  <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-emerald-50" />
-                  <div className="relative">
-                    <div className="flex flex-wrap items-start justify-between gap-6">
-                      <div>
-                        <p className="font-black uppercase tracking-widest text-rose-700">Seu Cartão Oficial</p>
-                        <h3 className="mt-2 font-display text-4xl text-emerald-950">{participant.full_name}</h3>
-                        <div className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1 text-sm font-black text-emerald-900">
-                          <Copy className="h-4 w-4" />
-                          {participant.code}
-                        </div>
-                      </div>
-                      <span
-                        className={`rounded-full px-5 py-2.5 text-sm font-black shadow-sm ${
-                          participant.donation_confirmed ? "bg-emerald-700 text-white" : "bg-yellow-300 text-emerald-950"
-                        }`}
-                      >
-                        {participant.donation_confirmed ? "Doação Confirmada ✓" : "Aguardando Doação..."}
-                      </span>
-                    </div>
-                    <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                      <Button onClick={() => copyCode(participant.code)} variant="outline" className="h-14 rounded-2xl border-2 font-black">
-                        {copied ? "Código Copiado!" : "Copiar meu Código"}
-                      </Button>
-                      <Button onClick={openWhatsApp} className="h-14 rounded-2xl bg-emerald-800 font-black text-white hover:bg-emerald-900">
-                        Avisar HM no WhatsApp
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </section>
+        )}
 
+        {showPredictions && (
         <section id="palpites" className="container py-24">
-          <div className="mb-12 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="font-black uppercase tracking-widest text-blue-700">Palpites Solidários</p>
-              <h2 className="mt-4 font-display text-4xl leading-tight text-emerald-950 sm:text-7xl">
-                BOLÃO DE <span className="text-yellow-500">PALPITES</span>
-              </h2>
-              
-              <div className="mt-8 flex flex-wrap gap-4">
-                 <div className="flex items-center gap-3 rounded-2xl bg-rose-50 px-5 py-3 text-sm font-black text-rose-700 border border-rose-100 shadow-sm">
-                    <ShieldCheck className="h-5 w-5" />
-                    ESTE NÃO É UM SITE DE APOSTAS
-                 </div>
-                 <div className="flex items-center gap-3 rounded-2xl bg-emerald-50 px-5 py-3 text-sm font-black text-emerald-700 border border-emerald-100 shadow-sm">
-                    <HandHeart className="h-5 w-5" />
-                    PARTICIPAÇÃO POR DOAÇÃO
-                 </div>
+          <div className="mb-8 overflow-hidden rounded-[2.5rem] bg-emerald-950 text-white shadow-2xl">
+            <div className="grid gap-0 lg:grid-cols-[1.05fr_0.95fr]">
+              <div className="bg-[radial-gradient(circle_at_top_left,#fde047_0,transparent_32%),linear-gradient(135deg,#14532d,#1d4ed8_55%,#14532d)] p-7 sm:p-10">
+                <p className="font-black uppercase tracking-widest text-yellow-300">Área de palpites</p>
+                <h2 className="mt-4 font-display text-4xl leading-tight sm:text-6xl">
+                  Escolha seus placares da Copa.
+                </h2>
+                <p className="mt-5 max-w-xl text-lg font-bold leading-8 text-emerald-50/90">
+                  Comece pelos jogos do Brasil e salve quando quiser. Você pode voltar com seu código para completar ou ajustar seus palpites.
+                </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <div className="flex items-center gap-3 rounded-2xl bg-white/12 px-4 py-3 text-xs font-black uppercase tracking-wide text-white backdrop-blur-sm">
+                    <ShieldCheck className="h-5 w-5 text-yellow-300" />
+                    Não é aposta
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl bg-white/12 px-4 py-3 text-xs font-black uppercase tracking-wide text-white backdrop-blur-sm">
+                    <HandHeart className="h-5 w-5 text-yellow-300" />
+                    Participação por doação
+                  </div>
+                </div>
               </div>
 
-              <p className="mt-8 text-lg font-bold text-stone-500">
-                {participant
-                  ? `${predictedCount}/${matches.length} jogos palpitados. Boa sorte!`
-                  : "Para palpitar, crie seu cartão do bolão ou acesse um cartão já cadastrado."}
-              </p>
+              <div className="p-7 sm:p-10">
+                {participant ? (
+                  <>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-black uppercase tracking-widest text-emerald-200">Jogando como</p>
+                        <h3 className="mt-2 font-display text-3xl text-white">{participant.full_name}</h3>
+                        <p className="mt-2 text-sm font-bold text-emerald-100/70">Código {participant.code}</p>
+                      </div>
+                      <span className="rounded-full bg-yellow-300 px-4 py-2 text-xs font-black uppercase text-emerald-950">
+                        {participant.donation_confirmed ? "Confirmado" : "A confirmar"}
+                      </span>
+                    </div>
+                    <div className="mt-8">
+                      <div className="mb-3 flex items-center justify-between text-sm font-black uppercase tracking-widest text-emerald-100/80">
+                        <span>{predictedCount}/{matches.length} jogos</span>
+                        <span>{predictionProgress}%</span>
+                      </div>
+                      <div className="h-4 overflow-hidden rounded-full bg-white/10">
+                        <div className="h-full rounded-full bg-yellow-300 transition-all" style={{ width: `${predictionProgress}%` }} />
+                      </div>
+                      <p className="mt-4 text-sm font-bold leading-6 text-emerald-100/70">
+                        Nesta visão: {visiblePredictedCount}/{visiblePredictionMatches.length} partidas preenchidas.
+                      </p>
+                    </div>
+                    <Button
+                      disabled={saving}
+                      form="predictions-form"
+                      className="mt-7 h-14 w-full rounded-2xl bg-rose-700 text-lg font-black text-white shadow-xl hover:bg-rose-800"
+                    >
+                      {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
+                      Salvar palpites
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-display text-3xl text-white">Primeiro faça sua participação.</p>
+                    <p className="mt-3 font-bold leading-7 text-emerald-100/70">
+                      Depois de receber seu código, os campos de placar ficam liberados para você preencher.
+                    </p>
+                    <Button
+                      onClick={() => navigateTo("/participar")}
+                      className="mt-7 h-14 w-full rounded-2xl bg-yellow-300 text-lg font-black text-emerald-950 hover:bg-yellow-200"
+                    >
+                      Fazer minha participação
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
-            <Button
-              disabled={!participant || saving}
-              form="predictions-form"
-              className="h-16 rounded-2xl bg-rose-700 px-12 text-xl font-black text-white shadow-[0_20px_40px_rgba(185,28,28,0.2)] hover:bg-rose-800"
-            >
-              Salvar meus Palpites
-            </Button>
           </div>
 
           {!participant && (
             <div className="mb-8 rounded-[2rem] border-2 border-yellow-300 bg-yellow-50 p-6 shadow-xl md:flex md:items-center md:justify-between md:gap-6">
               <div>
                 <p className="font-black uppercase tracking-widest text-rose-700">Antes de palpitar</p>
-                <h3 className="mt-2 font-display text-2xl text-emerald-950">Faça sua participação e fale com a HM no WhatsApp.</h3>
+                <h3 className="mt-2 font-display text-2xl text-emerald-950">Faça sua participação, fale com a HM e depois volte para preencher seus placares.</h3>
                 <p className="mt-2 font-bold text-stone-700">
-                  O cartão libera o preenchimento dos placares. A doação será confirmada pela organização para valer no ranking.
+                  A participação libera o preenchimento dos placares. A doação será confirmada pela organização para valer no ranking.
                 </p>
               </div>
               <div className="mt-5 flex flex-col gap-3 sm:flex-row md:mt-0">
                 <Button
-                  onClick={() => scrollToSection("participar")}
+                  onClick={() => navigateTo("/participar")}
                   className="h-12 rounded-2xl bg-blue-700 px-6 font-black text-white hover:bg-blue-800"
                 >
-                  Criar meu cartão
+                  Fazer participação
                 </Button>
                 <Button
                   asChild
@@ -1124,34 +1280,36 @@ export default function Home() {
                   className="h-12 rounded-2xl border-2 border-emerald-800 px-6 font-black text-emerald-950 hover:bg-emerald-50"
                 >
                   <a href={hmWhatsAppUrl} target="_blank" rel="noopener">
-                    Falar com a HM
+                    Chamar HM no WhatsApp
                   </a>
                 </Button>
               </div>
             </div>
           )}
 
-          <div className="mb-8 overflow-hidden rounded-[2rem] bg-white p-2 shadow-xl border border-stone-100">
-            <div className="grid grid-cols-2 gap-2">
+          <div className="mb-8 grid gap-3 rounded-[2rem] border border-stone-100 bg-white p-3 shadow-xl sm:grid-cols-2">
               <button
                 type="button"
                 onClick={() => setPredictionMode("brasil")}
-                className={`flex h-14 items-center justify-center rounded-2xl text-base font-black transition-all ${
+                className={`rounded-2xl p-5 text-left transition-all ${
                   predictionMode === "brasil" ? "bg-blue-700 text-white shadow-lg" : "bg-white text-emerald-950 hover:bg-stone-50"
                 }`}
               >
-                🇧🇷 SÓ JOGOS DO BRASIL
+                <span className="text-xs font-black uppercase tracking-widest opacity-80">Modo simples</span>
+                <span className="mt-1 block font-display text-2xl">🇧🇷 Jogos do Brasil</span>
+                <span className="mt-2 block text-sm font-bold opacity-80">Mais rápido para entrar no bolão.</span>
               </button>
               <button
                 type="button"
                 onClick={() => setPredictionMode("completo")}
-                className={`flex h-14 items-center justify-center rounded-2xl text-base font-black transition-all ${
+                className={`rounded-2xl p-5 text-left transition-all ${
                   predictionMode === "completo" ? "bg-blue-700 text-white shadow-lg" : "bg-white text-emerald-950 hover:bg-stone-50"
                 }`}
               >
-                MODO COPA COMPLETA
+                <span className="text-xs font-black uppercase tracking-widest opacity-80">Modo completo</span>
+                <span className="mt-1 block font-display text-2xl">🏆 Copa inteira</span>
+                <span className="mt-2 block text-sm font-bold opacity-80">Para quem quer disputar cada ponto.</span>
               </button>
-            </div>
           </div>
 
           {predictionMode === "completo" && (
@@ -1196,92 +1354,138 @@ export default function Home() {
             </div>
           ) : (
             <form id="predictions-form" onSubmit={savePredictions} className="grid gap-6 lg:grid-cols-2">
-              {visiblePredictionMatches.map((match) => (
+              {visiblePredictionMatches.map((match) => {
+                const matchPredicted = isMatchPredicted(match);
+                const isBrazilMatch =
+                  match.home_team.toLowerCase().includes("brasil") || match.away_team.toLowerCase().includes("brasil");
+
+                return (
                 <div
                   key={match.id}
-                  className={`relative overflow-hidden rounded-[2rem] border-2 bg-white transition-all hover:shadow-2xl ${
-                    match.home_team.toLowerCase().includes("brasil") || match.away_team.toLowerCase().includes("brasil")
-                      ? "border-yellow-300 ring-4 ring-yellow-400/10"
-                      : "border-stone-100"
+                  className={`relative overflow-hidden rounded-[2rem] border-2 bg-white shadow-sm transition-all hover:shadow-2xl ${
+                    isBrazilMatch ? "border-yellow-300 ring-4 ring-yellow-400/10" : "border-stone-100"
                   }`}
                 >
-                  <div className="flex flex-wrap items-center gap-3 bg-emerald-950 px-6 py-4 text-xs font-black text-white">
-                    <span className="rounded-lg bg-yellow-300 px-3 py-1.5 text-[10px] text-emerald-950">PARTIDA {match.id}</span>
-                    <span className="uppercase tracking-widest">{match.phase}</span>
-                    <span className="ml-auto inline-flex items-center gap-1.5 text-emerald-200">
-                      <CalendarDays className="h-4 w-4" />
-                      {formatShortDate(match.match_date)}
+                  <div
+                    className={`flex flex-wrap items-center gap-3 px-5 py-4 text-xs font-black ${
+                      isBrazilMatch ? "bg-blue-700 text-white" : "bg-emerald-950 text-white"
+                    }`}
+                  >
+                    <span className="rounded-lg bg-yellow-300 px-3 py-1.5 text-[10px] uppercase tracking-widest text-emerald-950">
+                      {isBrazilMatch ? "Brasil em campo" : `Partida ${match.id}`}
+                    </span>
+                    <span className="uppercase tracking-widest opacity-90">{match.phase}</span>
+                    <span
+                      className={`ml-auto rounded-full px-3 py-1.5 text-[10px] uppercase tracking-widest ${
+                        matchPredicted ? "bg-emerald-100 text-emerald-900" : "bg-white/10 text-white"
+                      }`}
+                    >
+                      {matchPredicted ? "Preenchido" : "Pendente"}
                     </span>
                   </div>
-                  <div className="p-6">
-                    <div className="mb-6 flex items-start gap-2 text-xs font-bold text-stone-400">
-                      <MapPin className="h-4 w-4 shrink-0 text-rose-600" />
-                      <span className="uppercase tracking-widest">{match.venue}, {match.city}</span>
+                  <div className="p-5 sm:p-6">
+                    <div className="mb-6 grid gap-3 text-xs font-bold text-stone-500 sm:grid-cols-[1fr_auto] sm:items-center">
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 shrink-0 text-rose-600" />
+                        <span className="uppercase tracking-widest">{match.venue}, {match.city}</span>
+                      </div>
+                      <div className="inline-flex items-center gap-1.5 font-black text-blue-700">
+                        <CalendarDays className="h-4 w-4" />
+                        {formatShortDate(match.match_date)}
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-[1fr_90px_20px_90px_1fr] items-center gap-2 sm:grid-cols-[1fr_90px_40px_90px_1fr] sm:gap-4">
-                      <p className="text-right font-display text-base leading-tight text-emerald-950 sm:text-xl">
-                        {match.home_team}
-                      </p>
-                      <input
-                        aria-label={`Placar ${match.home_team}`}
-                        disabled={!participant}
-                        min={0}
-                        inputMode="numeric"
-                        type="number"
-                        value={predictions[predictionKey(match.id, "home")] || ""}
-                        onChange={(event) =>
-                          setPredictions((current) => ({
-                            ...current,
-                            [predictionKey(match.id, "home")]: event.target.value,
-                          }))
-                        }
-                        className="h-16 rounded-2xl border-2 border-stone-100 bg-stone-50 text-center font-display text-3xl text-rose-700 outline-none focus:border-rose-700 focus:bg-white disabled:opacity-50"
-                      />
-                      <span className="text-center font-display text-2xl text-stone-300">X</span>
-                      <input
-                        aria-label={`Placar ${match.away_team}`}
-                        disabled={!participant}
-                        min={0}
-                        inputMode="numeric"
-                        type="number"
-                        value={predictions[predictionKey(match.id, "away")] || ""}
-                        onChange={(event) =>
-                          setPredictions((current) => ({
-                            ...current,
-                            [predictionKey(match.id, "away")]: event.target.value,
-                          }))
-                        }
-                        className="h-16 rounded-2xl border-2 border-stone-100 bg-stone-50 text-center font-display text-3xl text-rose-700 outline-none focus:border-rose-700 focus:bg-white disabled:opacity-50"
-                      />
-                      <p className="text-left font-display text-base leading-tight text-emerald-950 sm:text-xl">
-                        {match.away_team}
-                      </p>
+                    <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3">
+                      <label className="block min-w-0">
+                        <span className="mb-3 block min-h-12 text-right font-display text-lg leading-tight text-emerald-950 sm:text-xl">
+                          {match.home_team}
+                        </span>
+                        <input
+                          aria-label={`Placar ${match.home_team}`}
+                          disabled={!participant}
+                          min={0}
+                          inputMode="numeric"
+                          type="number"
+                          value={predictions[predictionKey(match.id, "home")] || ""}
+                          onChange={(event) =>
+                            setPredictions((current) => ({
+                              ...current,
+                              [predictionKey(match.id, "home")]: event.target.value,
+                            }))
+                          }
+                          className="h-20 w-full rounded-2xl border-2 border-stone-100 bg-stone-50 text-center font-display text-4xl text-rose-700 outline-none transition-all focus:border-rose-700 focus:bg-white disabled:opacity-40"
+                        />
+                      </label>
+                      <span className="mb-5 font-display text-3xl text-stone-300">X</span>
+                      <label className="block min-w-0">
+                        <span className="mb-3 block min-h-12 text-left font-display text-lg leading-tight text-emerald-950 sm:text-xl">
+                          {match.away_team}
+                        </span>
+                        <input
+                          aria-label={`Placar ${match.away_team}`}
+                          disabled={!participant}
+                          min={0}
+                          inputMode="numeric"
+                          type="number"
+                          value={predictions[predictionKey(match.id, "away")] || ""}
+                          onChange={(event) =>
+                            setPredictions((current) => ({
+                              ...current,
+                              [predictionKey(match.id, "away")]: event.target.value,
+                            }))
+                          }
+                          className="h-20 w-full rounded-2xl border-2 border-stone-100 bg-stone-50 text-center font-display text-4xl text-rose-700 outline-none transition-all focus:border-rose-700 focus:bg-white disabled:opacity-40"
+                        />
+                      </label>
                     </div>
+                    {!participant && (
+                      <p className="mt-5 rounded-2xl bg-yellow-50 p-4 text-sm font-bold text-stone-700">
+                        Crie sua participação para liberar os campos de placar.
+                      </p>
+                    )}
                   </div>
                 </div>
-              ))}
+                );
+              })}
+              {participant && visiblePredictionMatches.length > 0 && (
+                <div className="lg:col-span-2">
+                  <div className="rounded-[2rem] border-2 border-emerald-100 bg-white p-5 shadow-xl sm:flex sm:items-center sm:justify-between sm:gap-6">
+                    <div>
+                      <p className="font-display text-2xl text-emerald-950">Terminou por enquanto?</p>
+                      <p className="mt-1 text-sm font-bold text-stone-600">
+                        Salve seus palpites agora. Você pode voltar depois com seu código para completar ou ajustar enquanto a campanha estiver aberta.
+                      </p>
+                    </div>
+                    <Button disabled={saving} className="mt-5 h-14 w-full rounded-2xl bg-rose-700 font-black text-white hover:bg-rose-800 sm:mt-0 sm:w-auto sm:px-8">
+                      {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <CheckCircle2 className="h-5 w-5" />}
+                      Salvar palpites
+                    </Button>
+                  </div>
+                </div>
+              )}
             </form>
           )}
         </section>
+        )}
 
+        {showRanking && (
         <section id="ranking" className="bg-emerald-950 py-24 text-white">
           <div className="container">
             <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <p className="font-black uppercase tracking-widest text-yellow-300">Liderança</p>
-                <h2 className="mt-4 font-display text-4xl sm:text-7xl">Ranking <span className="text-white">Solidário</span></h2>
+                <h2 className="mt-4 font-display text-4xl sm:text-7xl">Ranking da <span className="text-white">Torcida Solidária</span></h2>
               </div>
               <p className="max-w-md text-lg font-medium text-emerald-200/70">
-                A pontuação é liberada assim que sua doação for confirmada pela equipe da HM Bazar e Conveniência.
+                Apenas participantes com doação confirmada aparecem no ranking.
               </p>
             </div>
 
             {ranking.length === 0 ? (
               <div className="rounded-[3rem] border border-white/10 bg-white/5 p-16 text-center shadow-2xl backdrop-blur-sm">
                  <Trophy className="mx-auto h-20 w-20 text-white/20" />
-                 <p className="mt-8 font-display text-3xl text-white/50">O campo está pronto para os primeiros heróis.</p>
-                 <p className="mt-2 text-emerald-100/40">As doações confirmadas aparecerão aqui em breve.</p>
+                 <p className="mt-8 font-display text-3xl text-white/50">O ranking começa com as primeiras doações confirmadas.</p>
+                 <p className="mt-2 text-emerald-100/40">Depois que os resultados forem lançados, os pontos aparecem aqui.</p>
               </div>
             ) : (
               <>
@@ -1335,7 +1539,9 @@ export default function Home() {
             )}
           </div>
         </section>
+        )}
 
+        {showSocial && (
         <section id="acompanhe" className="bg-emerald-950 py-20 text-white">
           <div className="container">
             <div className="mb-12 text-center">
@@ -1385,6 +1591,7 @@ export default function Home() {
             </div>
           </div>
         </section>
+        )}
 
       </main>
 
@@ -1404,10 +1611,11 @@ export default function Home() {
           <div>
             <h4 className="font-display text-xl text-emerald-950">Links Rápidos</h4>
             <ul className="mt-6 space-y-4 font-bold text-stone-600">
-              <li><button onClick={() => scrollToSection("top")}>Início</button></li>
-              <li><button onClick={() => scrollToSection("conheca-hm")}>Sobre a HM</button></li>
-              <li><button onClick={() => scrollToSection("conheca-associacao")}>A Causa</button></li>
-              <li><button onClick={() => scrollToSection("participar")}>Participar</button></li>
+              <li><button onClick={() => navigateTo("/")}>Início</button></li>
+              <li><button onClick={() => navigateTo("/sobre")}>Sobre a campanha</button></li>
+              <li><button onClick={() => navigateTo("/participar")}>Participar</button></li>
+              <li><button onClick={() => navigateTo("/palpites")}>Palpites</button></li>
+              <li><button onClick={() => navigateTo("/ranking")}>Ranking</button></li>
             </ul>
           </div>
 
@@ -1444,20 +1652,16 @@ export default function Home() {
         </div>
       </footer>
 
-      {participant && (
-        <div className="fixed bottom-6 right-6 z-50 lg:hidden">
-          <Button
-            onClick={(e) => {
-              const form = document.getElementById("predictions-form") as HTMLFormElement;
-              form?.requestSubmit();
-            }}
-            disabled={saving}
-            className="h-16 w-16 rounded-full bg-rose-700 p-0 shadow-2xl hover:bg-rose-800"
-          >
-            {saving ? <Loader2 className="h-6 w-6 animate-spin" /> : <CheckCircle2 className="h-8 w-8 text-white" />}
-          </Button>
-        </div>
-      )}
+      <Button
+        onClick={() => scrollToSection("top")}
+        aria-label="Voltar ao topo"
+        className={`fixed right-6 z-50 h-12 w-12 rounded-full bg-emerald-900 p-0 text-white shadow-2xl hover:bg-emerald-800 ${
+          participant ? "bottom-24 lg:bottom-6" : "bottom-6"
+        }`}
+      >
+        <ArrowUp className="h-6 w-6" />
+      </Button>
+
     </div>
   );
 }
