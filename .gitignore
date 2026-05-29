@@ -120,3 +120,6 @@ client/public/__manus__/version.json
 # Imported source packages and local reference media
 archives/
 assets/**/originals/
+
+# Temporary generated source converted to optimized JPG
+client/public/assets/brazil-fans-hero.png

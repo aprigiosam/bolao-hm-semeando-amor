@@ -6,6 +6,8 @@ import {
   CheckCircle2,
   ChevronDown,
   Copy,
+  Flag,
+  Gift,
   HandHeart,
   Heart,
   Loader2,
@@ -13,9 +15,9 @@ import {
   Medal,
   ShieldCheck,
   Sparkles,
+  Ticket,
   Trophy,
   Users,
-  Utensils,
 } from "lucide-react";
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 
@@ -92,9 +94,20 @@ const assets = {
   hmLogo: "/assets/hm-logo.png",
   semeandoLogo: "/assets/semeando-amor-logo.png",
   hmStore: "/assets/hm-fachada.jpg",
-  stadiumHero: "/assets/stadium-hero.jpg",
+  stadiumHero: "/assets/brazil-fans-hero.jpg",
   community: "/assets/community.jpg",
+  stadiumAzteca: "/assets/stadium-azteca.jpg",
+  stadiumMetlife: "/assets/stadium-metlife.jpg",
+  stadiumSofi: "/assets/stadium-sofi.jpg",
+  stadiumAtt: "/assets/stadium-att.jpg",
 };
+
+const stadiumJourney = [
+  { name: "Estádio Azteca", city: "Cidade do México", country: "México", image: assets.stadiumAzteca },
+  { name: "MetLife Stadium", city: "East Rutherford", country: "Estados Unidos", image: assets.stadiumMetlife },
+  { name: "SoFi Stadium", city: "Inglewood", country: "Estados Unidos", image: assets.stadiumSofi },
+  { name: "AT&T Stadium", city: "Arlington", country: "Estados Unidos", image: assets.stadiumAtt },
+];
 
 function normalizePhone(value: string) {
   return value.replace(/\D/g, "");
@@ -166,6 +179,7 @@ export default function Home() {
   const [accessWhatsApp, setAccessWhatsApp] = useState("");
   const [phaseFilter, setPhaseFilter] = useState("Todas");
   const [dateFilter, setDateFilter] = useState("Todas");
+  const [predictionMode, setPredictionMode] = useState<"brasil" | "completo">("brasil");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -183,6 +197,17 @@ export default function Home() {
       }),
     [dateFilter, matches, phaseFilter]
   );
+
+  const brazilMatches = useMemo(
+    () =>
+      matches.filter(
+        (match) =>
+          match.home_team.toLowerCase().includes("brasil") || match.away_team.toLowerCase().includes("brasil")
+      ),
+    [matches]
+  );
+
+  const visiblePredictionMatches = predictionMode === "brasil" ? (brazilMatches.length > 0 ? brazilMatches : matches.slice(0, 3)) : filteredMatches;
 
   const predictedCount = useMemo(
     () =>
@@ -391,26 +416,28 @@ export default function Home() {
         <section
           className="relative isolate overflow-hidden bg-[#06351f] text-white"
           style={{
-            backgroundImage: `linear-gradient(115deg, rgba(4, 42, 24, 0.92), rgba(22, 101, 52, 0.72) 48%, rgba(185, 28, 28, 0.72)), url(${assets.stadiumHero})`,
+            backgroundImage: `linear-gradient(110deg, rgba(2, 44, 34, 0.88), rgba(21, 128, 61, 0.58) 46%, rgba(29, 78, 216, 0.44)), url(${assets.stadiumHero})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
         >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_20%,rgba(250,204,21,0.34),transparent_24%),radial-gradient(circle_at_18%_80%,rgba(37,99,235,0.30),transparent_28%)]" />
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#fffaf0] to-transparent" />
-          <div className="container relative grid gap-8 pb-20 pt-12 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:pb-24 lg:pt-20">
+          <div className="container relative grid gap-8 pb-20 pt-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-24 lg:pt-18">
             <div>
               <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/15 px-4 py-2 text-sm font-black shadow-2xl backdrop-blur">
-                <HandHeart className="h-4 w-4 text-yellow-300" />
-                Copa 2026 com solidariedade no bairro
+                <Flag className="h-4 w-4 text-yellow-300" />
+                Brasil, Copa e torcida do bairro
               </div>
-              <h1 className="max-w-4xl font-display text-4xl leading-tight text-white sm:text-5xl lg:text-7xl">
-                Bolão Solidário da Copa 2026
+              <h1 className="max-w-4xl font-display text-4xl leading-[0.98] text-white sm:text-5xl lg:text-7xl">
+                🇧🇷 TORÇA PELO BRASIL NA COPA 2026
               </h1>
               <p className="mt-5 max-w-2xl text-lg font-bold text-emerald-50 sm:text-xl">
-                Doe, participe e ajude a Associação Semeando Amor
+                Faça seus palpites, concorra a prêmios e ajude a Associação Semeando Amor.
               </p>
               <p className="mt-4 max-w-2xl text-base text-white/86 sm:text-lg">
-                Um bolão da HM para transformar cada palpite em apoio real para ações sociais da comunidade.
+                Entre no clima da Copa pelo WhatsApp, acompanhe os jogos do Brasil e transforme torcida em impacto real
+                na comunidade.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button
@@ -435,20 +462,20 @@ export default function Home() {
               <div className="rounded-[1.5rem] bg-white p-4 text-emerald-950 shadow-xl">
                 <div className="grid gap-3 sm:grid-cols-3">
                   {[
-                    ["72", "jogos"],
-                    ["10", "pontos placar exato"],
-                    ["1", "causa solidária"],
+                    ["Brasil", "jogos em destaque"],
+                    ["Prêmios", "top 3 preparado"],
+                    ["Sorteio", "números da sorte"],
                   ].map(([value, label]) => (
                     <div key={label} className="rounded-2xl bg-emerald-50 p-4 text-center">
-                      <p className="font-display text-4xl text-rose-700">{value}</p>
+                      <p className="font-display text-2xl text-blue-700 sm:text-3xl">{value}</p>
                       <p className="mt-1 text-xs font-black uppercase text-emerald-900">{label}</p>
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 rounded-2xl bg-[linear-gradient(135deg,#fef3c7,#dcfce7)] p-5">
-                  <p className="font-display text-xl">O jogo começa com uma doação.</p>
+                <div className="mt-4 rounded-2xl bg-[linear-gradient(135deg,#fef3c7,#dbeafe,#dcfce7)] p-5">
+                  <p className="font-display text-xl">5 segundos para entender: Copa, Brasil, prêmio e causa.</p>
                   <p className="mt-2 text-sm font-semibold text-stone-700">
-                    A organização confirma a entrega e libera sua participação no ranking público.
+                    Você participa do bolão, ajuda a Semeando Amor e ainda concorre pelo ranking e pelo sorteio solidário.
                   </p>
                 </div>
               </div>
@@ -467,24 +494,24 @@ export default function Home() {
         <section id="como-funciona" className="container py-12">
           <div className="max-w-2xl">
             <p className="font-black uppercase tracking-wide text-rose-700">Como funciona</p>
-            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Simples para participar, forte para ajudar.</h2>
+            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Torça, palpite e entre na corrente.</h2>
           </div>
           <div className="mt-7 grid gap-4 md:grid-cols-3">
             {[
               {
-                icon: Utensils,
-                title: "Doe",
-                text: "Escolha alimentos, roupas ou brinquedos e combine a entrega na HM ou na Associação.",
+                icon: Flag,
+                title: "Torça pelo Brasil",
+                text: "Comece pelos jogos da seleção e sinta o clima da Copa antes de preencher o bolão completo.",
               },
               {
                 icon: Trophy,
                 title: "Palpite",
-                text: "Crie seu código, marque os placares dos jogos da primeira fase e salve quando quiser.",
+                text: "Marque os placares, dispute o ranking e concorra aos prêmios preparados pela campanha.",
               },
               {
-                icon: Medal,
-                title: "Acompanhe o ranking",
-                text: "Depois da confirmação da doação, seus pontos aparecem no ranking público.",
+                icon: HandHeart,
+                title: "Ajude uma causa",
+                text: "Sua doação fortalece as ações da Associação Semeando Amor no bairro.",
               },
             ].map((step, index) => {
               const Icon = step.icon;
@@ -501,6 +528,131 @@ export default function Home() {
                 </Card>
               );
             })}
+          </div>
+        </section>
+
+        <section className="container py-12">
+          <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+            <div>
+              <p className="font-black uppercase tracking-wide text-blue-700">🇧🇷 Jogos do Brasil</p>
+              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Comece pelo que todo mundo quer ver.</h2>
+              <p className="mt-4 text-lg font-medium leading-8 text-stone-700">
+                O modo simples deixa os jogos da seleção em primeiro plano. Quem quiser viver a Copa inteira pode abrir
+                o modo completo e palpitar em todos os jogos.
+              </p>
+              <Button
+                onClick={() => scrollToSection("palpites")}
+                className="mt-6 h-12 bg-blue-700 px-6 font-black text-white hover:bg-blue-800"
+              >
+                Palpitar nos jogos do Brasil
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="grid gap-4">
+              {(brazilMatches.length > 0 ? brazilMatches.slice(0, 3) : matches.slice(0, 3)).map((match) => (
+                <div
+                  key={match.id}
+                  className="overflow-hidden rounded-[1.5rem] border-2 border-yellow-300 bg-white shadow-[0_18px_45px_rgba(29,78,216,0.12)]"
+                >
+                  <div className="bg-[linear-gradient(90deg,#16a34a,#facc15,#2563eb)] px-4 py-2 text-xs font-black uppercase text-white">
+                    Próximo jogo do Brasil
+                  </div>
+                  <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 p-4 text-center">
+                    <p className="font-display text-lg text-emerald-950">{match.home_team}</p>
+                    <span className="rounded-full bg-blue-700 px-3 py-2 text-xs font-black text-white">x</span>
+                    <p className="font-display text-lg text-emerald-950">{match.away_team}</p>
+                  </div>
+                  <div className="border-t border-emerald-900/10 px-4 py-3 text-sm font-bold text-stone-600">
+                    {formatDate(match.match_date)} • {match.venue}, {match.city}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[linear-gradient(135deg,#ecfdf5,#eff6ff,#fefce8)] py-12">
+          <div className="container">
+            <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="font-black uppercase tracking-wide text-blue-700">🏆 Premiação</p>
+                <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Tem disputa, ranking e prêmio.</h2>
+              </div>
+              <p className="max-w-md text-sm font-bold text-stone-600">
+                Os valores serão definidos pela organização. A estrutura já está pronta para anunciar os ganhadores.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3">
+              {[
+                ["1º Lugar", "Prêmio principal", "bg-yellow-300 text-emerald-950"],
+                ["2º Lugar", "Prêmio especial", "bg-white text-blue-800"],
+                ["3º Lugar", "Prêmio da torcida", "bg-white text-emerald-950"],
+              ].map(([place, prize, className]) => (
+                <Card key={place} className={`border-0 p-6 shadow-xl ${className}`}>
+                  <Medal className="h-9 w-9 text-rose-700" />
+                  <p className="mt-5 font-display text-3xl">{place}</p>
+                  <p className="mt-2 text-sm font-black uppercase">{prize}</p>
+                  <p className="mt-4 rounded-2xl bg-white/45 px-4 py-3 text-sm font-bold">A definir pela campanha</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="container grid gap-6 py-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
+          <div className="rounded-[2rem] bg-blue-700 p-6 text-white shadow-2xl sm:p-8">
+            <Ticket className="h-11 w-11 text-yellow-300" />
+            <h2 className="mt-5 font-display text-3xl sm:text-4xl">Sorteio Solidário</h2>
+            <p className="mt-4 text-lg font-medium leading-8 text-blue-50">
+              Além do ranking, cada doação pode gerar um número da sorte. Quem ajuda mais recebe mais chances no sorteio,
+              sem comprar pontos e sem alterar a disputa dos palpites.
+            </p>
+          </div>
+          <div className="grid gap-3">
+            {[
+              ["1 doação", "recebe número da sorte"],
+              ["Mais ajuda", "mais números para concorrer"],
+              ["Ranking preservado", "pontuação segue só pelos palpites"],
+            ].map(([title, text]) => (
+              <div key={title} className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-sm">
+                <Gift className="h-7 w-7 shrink-0 text-rose-700" />
+                <div>
+                  <p className="font-display text-xl text-emerald-950">{title}</p>
+                  <p className="text-sm font-bold text-stone-600">{text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-white py-12">
+          <div className="container">
+            <div className="mb-7">
+              <p className="font-black uppercase tracking-wide text-blue-700">A Jornada da Copa</p>
+              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Um evento mundial passando por estádios gigantes.</h2>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {stadiumJourney.map((stadium) => (
+                <Card key={stadium.name} className="overflow-hidden border-0 bg-white shadow-[0_18px_42px_rgba(15,23,42,0.12)]">
+                  <SafeImage
+                    src={stadium.image}
+                    alt={stadium.name}
+                    className="h-40 w-full object-cover"
+                    fallback={
+                      <VisualFallback className="h-40 w-full">
+                        <Trophy className="h-9 w-9 text-yellow-200" />
+                      </VisualFallback>
+                    }
+                  />
+                  <div className="p-4">
+                    <p className="font-display text-lg text-emerald-950">{stadium.name}</p>
+                    <p className="mt-1 text-sm font-bold text-stone-600">
+                      {stadium.city} • {stadium.country}
+                    </p>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -527,8 +679,8 @@ export default function Home() {
                 Semeando Amor com a Tia Mônica
               </h2>
               <p className="mt-5 text-lg font-medium leading-8 text-stone-700">
-                A Associação Semeando Amor realiza ações sociais que acolhem famílias, crianças e vizinhos do bairro.
-                Neste bolão, a Copa vira ponto de encontro: cada doação fortalece uma rede local de cuidado.
+                A Associação Semeando Amor realiza ações sociais com foco em comunidade, educação, cuidado e acolhimento.
+                Neste bolão, a Copa vira ponto de encontro: cada doação fortalece uma rede local de apoio.
               </p>
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl bg-emerald-50 p-5">
@@ -548,12 +700,34 @@ export default function Home() {
 
         <section className="container grid gap-8 py-12 lg:grid-cols-[1fr_0.95fr] lg:items-center">
           <div>
-            <p className="font-black uppercase tracking-wide text-rose-700">HM apoia essa causa</p>
-            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Um ponto de encontro para o bairro.</h2>
+            <p className="font-black uppercase tracking-wide text-blue-700">Realização e Apoio</p>
+            <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">HM e Semeando Amor juntas pela comunidade.</h2>
             <p className="mt-5 text-lg font-medium leading-8 text-stone-700">
-              A HM Bazar e Conveniência recebe participantes, ajuda na organização das entregas e conecta a campanha
-              com quem vive a comunidade no dia a dia.
+              A HM aparece como apoiadora oficial da ação, recebe participantes, ajuda na organização das entregas e
+              conecta a campanha com quem vive o bairro no dia a dia.
             </p>
+            <div className="mt-6 grid max-w-xl grid-cols-2 gap-3">
+              <div className="rounded-2xl bg-white p-4 shadow-sm">
+                <SafeImage
+                  src={assets.hmLogo}
+                  alt="HM Bazar e Conveniência"
+                  className="h-16 w-full object-contain"
+                  fallback={<VisualFallback className="h-16 rounded-xl text-xs font-black">HM</VisualFallback>}
+                />
+              </div>
+              <div className="rounded-2xl bg-white p-4 shadow-sm">
+                <SafeImage
+                  src={assets.semeandoLogo}
+                  alt="Associação Semeando Amor"
+                  className="h-16 w-full object-contain"
+                  fallback={
+                    <VisualFallback className="h-16 rounded-xl">
+                      <Heart className="h-5 w-5" />
+                    </VisualFallback>
+                  }
+                />
+              </div>
+            </div>
             <div className="mt-6 space-y-3">
               {[hmAddress, associationAddress].map((address) => (
                 <div key={address} className="flex gap-3 rounded-2xl bg-white p-4 shadow-sm">
@@ -713,11 +887,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="container py-12">
+        <section id="palpites" className="container py-12">
           <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="font-black uppercase tracking-wide text-rose-700">Palpites</p>
-              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Escolha os placares da Copa.</h2>
+              <p className="font-black uppercase tracking-wide text-blue-700">Palpites</p>
+              <h2 className="mt-2 font-display text-3xl text-emerald-950 sm:text-4xl">Primeiro Brasil. Depois, Copa inteira.</h2>
               <p className="mt-2 text-sm font-bold text-stone-600">
                 {participant
                   ? `${predictedCount}/${matches.length} jogos preenchidos.`
@@ -733,38 +907,68 @@ export default function Home() {
             </Button>
           </div>
 
-          <div className="mb-5 grid gap-3 md:grid-cols-2">
-            <label className="relative block">
-              <span className="mb-2 block text-xs font-black uppercase text-emerald-950">Filtrar por fase</span>
-              <select
-                value={phaseFilter}
-                onChange={(event) => setPhaseFilter(event.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-emerald-900/15 bg-white px-4 font-bold outline-none focus:border-emerald-700"
+          <div className="mb-5 rounded-[1.5rem] bg-white p-3 shadow-sm">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setPredictionMode("brasil")}
+                className={`rounded-2xl px-4 py-3 text-sm font-black ${
+                  predictionMode === "brasil" ? "bg-blue-700 text-white" : "bg-emerald-50 text-emerald-950"
+                }`}
               >
-                {phases.map((phase) => (
-                  <option key={phase} value={phase}>
-                    {phase}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute bottom-3 right-4 h-5 w-5 text-emerald-900" />
-            </label>
-            <label className="relative block">
-              <span className="mb-2 block text-xs font-black uppercase text-emerald-950">Filtrar por data</span>
-              <select
-                value={dateFilter}
-                onChange={(event) => setDateFilter(event.target.value)}
-                className="h-12 w-full appearance-none rounded-xl border border-emerald-900/15 bg-white px-4 font-bold outline-none focus:border-emerald-700"
+                🇧🇷 Modo Simples
+              </button>
+              <button
+                type="button"
+                onClick={() => setPredictionMode("completo")}
+                className={`rounded-2xl px-4 py-3 text-sm font-black ${
+                  predictionMode === "completo" ? "bg-blue-700 text-white" : "bg-emerald-50 text-emerald-950"
+                }`}
               >
-                {dates.map((date) => (
-                  <option key={date} value={date}>
-                    {date === "Todas" ? "Todas" : formatDate(date)}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute bottom-3 right-4 h-5 w-5 text-emerald-900" />
-            </label>
+                Modo Completo
+              </button>
+            </div>
+            <p className="mt-3 px-2 text-sm font-bold text-stone-600">
+              {predictionMode === "brasil"
+                ? "Você vê só os jogos do Brasil para começar rápido."
+                : "Você vê todos os jogos da Copa e pode filtrar por fase ou data."}
+            </p>
           </div>
+
+          {predictionMode === "completo" && (
+            <div className="mb-5 grid gap-3 md:grid-cols-2">
+              <label className="relative block">
+                <span className="mb-2 block text-xs font-black uppercase text-emerald-950">Filtrar por fase</span>
+                <select
+                  value={phaseFilter}
+                  onChange={(event) => setPhaseFilter(event.target.value)}
+                  className="h-12 w-full appearance-none rounded-xl border border-emerald-900/15 bg-white px-4 font-bold outline-none focus:border-emerald-700"
+                >
+                  {phases.map((phase) => (
+                    <option key={phase} value={phase}>
+                      {phase}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute bottom-3 right-4 h-5 w-5 text-emerald-900" />
+              </label>
+              <label className="relative block">
+                <span className="mb-2 block text-xs font-black uppercase text-emerald-950">Filtrar por data</span>
+                <select
+                  value={dateFilter}
+                  onChange={(event) => setDateFilter(event.target.value)}
+                  className="h-12 w-full appearance-none rounded-xl border border-emerald-900/15 bg-white px-4 font-bold outline-none focus:border-emerald-700"
+                >
+                  {dates.map((date) => (
+                    <option key={date} value={date}>
+                      {date === "Todas" ? "Todas" : formatDate(date)}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute bottom-3 right-4 h-5 w-5 text-emerald-900" />
+              </label>
+            </div>
+          )}
 
           {loading ? (
             <div className="flex items-center gap-2 rounded-2xl bg-white p-8 font-bold text-emerald-900 shadow-sm">
@@ -773,10 +977,14 @@ export default function Home() {
             </div>
           ) : (
             <form id="predictions-form" onSubmit={savePredictions} className="grid gap-4 lg:grid-cols-2">
-              {filteredMatches.map((match) => (
+              {visiblePredictionMatches.map((match) => (
                 <div
                   key={match.id}
-                  className="overflow-hidden rounded-[1.5rem] border border-emerald-900/10 bg-white shadow-[0_14px_34px_rgba(20,83,45,0.08)]"
+                  className={`overflow-hidden rounded-[1.5rem] border bg-white shadow-[0_14px_34px_rgba(20,83,45,0.08)] ${
+                    match.home_team.toLowerCase().includes("brasil") || match.away_team.toLowerCase().includes("brasil")
+                      ? "border-yellow-300 ring-2 ring-yellow-200"
+                      : "border-emerald-900/10"
+                  }`}
                 >
                   <div className="flex flex-wrap items-center gap-2 bg-emerald-950 px-4 py-3 text-xs font-black text-white">
                     <span className="rounded-full bg-yellow-300 px-3 py-1 text-emerald-950">Jogo {match.id}</span>
